@@ -1,0 +1,14 @@
+{
+  "name": "screenshot-glb",
+  "version": "1.0.0",
+  "description": "A command line utility for taking screenshots of a glTF 2.0 binary file using Google's <model-viewer> component.",
+  "bin": {
+    "screenshot-glb": "./src/cli.js"
+  },
+  "author": "Stephan Leroux <stephan.leroux@shopify.com>",
+  "license": "MIT",
+  "dependencies": {
+    "puppeteer": "^1.19.0",
+    "yargs": "^13.3.0"
+  }
+}
