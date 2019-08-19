@@ -1,6 +1,9 @@
 {
-  "name": "screenshot-glb",
+  "name": "@shopify/screenshot-glb",
   "version": "1.0.0",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "A command line utility for taking screenshots of a glTF 2.0 binary file using Google's <model-viewer> component.",
   "bin": {
     "screenshot-glb": "./src/cli.js"
