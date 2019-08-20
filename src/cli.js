@@ -14,10 +14,14 @@ const argv = require('yargs')
   .alias('o', 'output')
   .alias('w', 'width')
   .alias('h', 'height')
+  .alias('f', 'image_format')
+  .alias('q', 'image_quality')
   .describe('i', 'Input glTF 2.0 binary (GLB) filepath')
   .describe('o', 'Output PNG screenshot filepath')
   .describe('w', 'Output image width')
   .describe('h', 'Output image height')
+  .describe('f', 'Output image format (defaults to \'image/png\')')
+  .describe('q', 'Quality of the output image (defaults to 0.92)')
   .demandOption(['i', 'o'])
   .argv;
 
@@ -34,10 +38,17 @@ const serveFolder = (path, port) => {
 
   const width = argv.width || 1024;
   const height = argv.height || 1024;
+  const format = argv.image_format || 'image/png';
+  const quality = argv.image_quality || 0.92;
 
   const {page, browser} = await startBrowser({width, height, libPort: LIB_SERVER_PORT});
 
-  await loadGLBAndScreenshot(page, glbPath, argv.output);
+  await loadGLBAndScreenshot(page, {
+    glbPath,
+    outputPath: argv.output,
+    format,
+    quality,
+  });
 
   await browser.close();
 
