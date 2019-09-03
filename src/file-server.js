@@ -2,7 +2,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-module.exports = (mountDirectory) => {
+const createFileServer = (mountDirectory) => {
   return http.createServer((request, response) => {
     const filePath = path.join(mountDirectory, request.url);
     const extname = String(path.extname(filePath)).toLowerCase();
@@ -29,3 +29,36 @@ module.exports = (mountDirectory) => {
     });
   });
 }
+
+module.exports = class FileServer {
+  constructor(mountDirectory) {
+    this.mountDirectory = mountDirectory;
+    this.server = null;
+  }
+
+  start = async () => {
+    const server = createFileServer(this.mountDirectory);
+
+    return new Promise((resolve) => {
+      server.listen(0, () => {
+        resolve(server.address().port);
+      });
+    }).then((port) => {
+      this.port = port;
+      this.server = server;
+      return Promise.resolve();
+    })
+  }
+
+  stop = async () => {
+    return new Promise((resolve) => {
+      this.server.close(() => {
+        resolve();
+      }) 
+    }).then(() => {
+      this.server = null;
+      this.port = null;
+      return Promise.resolve();
+    })
+  } 
+};
