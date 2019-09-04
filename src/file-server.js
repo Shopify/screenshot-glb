@@ -36,7 +36,7 @@ module.exports = class FileServer {
     this.server = null;
   }
 
-  start = async () => {
+  async start() {
     const server = createFileServer(this.mountDirectory);
 
     return new Promise((resolve) => {
@@ -50,7 +50,7 @@ module.exports = class FileServer {
     })
   }
 
-  stop = async () => {
+  async stop() {
     return new Promise((resolve) => {
       this.server.close(() => {
         resolve();
