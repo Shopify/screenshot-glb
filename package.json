@@ -1,6 +1,6 @@
 {
   "name": "@shopify/screenshot-glb",
-  "version": "1.1.0",
+  "version": "v1.1.1",
   "publishConfig": {
     "access": "public"
   },
