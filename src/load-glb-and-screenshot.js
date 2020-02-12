@@ -1,10 +1,10 @@
 const puppeteer = require('puppeteer');
 
-module.exports = async (page, {glbPath, outputPath, format, quality}) => {
+module.exports = async (page, {glbPath, outputPath, format, quality}, timeout) => {
   return new Promise((resolve) => {
     page.exposeFunction('resolvePromise', resolve);
 
-    page.evaluate(async (browser_glbPath, browser_outputPath, browser_format, browser_quality) => {
+    page.evaluate(async (browser_glbPath, browser_outputPath, browser_format, browser_quality, timeout) => {
       const waitUntil = async (check, interval, timeout) => {
         var endTime = Number(new Date()) + timeout;
 
@@ -26,16 +26,16 @@ module.exports = async (page, {glbPath, outputPath, format, quality}) => {
       modelViewer.src = browser_glbPath;
       document.body.appendChild(modelViewer);
 
-      await waitUntil(() => { 
+      await waitUntil(() => {
         return modelViewer.modelIsVisible;
-      }, 1000, 10000);
+      }, 1000, timeout || 10000);
 
       await window.saveDataUrl(
-        modelViewer.toDataURL(browser_format, browser_quality), 
+        modelViewer.toDataURL(browser_format, browser_quality),
         browser_outputPath,
       );
 
       window.resolvePromise();
-    }, glbPath, outputPath, format, quality);
+    }, glbPath, outputPath, format, quality, timeout);
   });
 }
