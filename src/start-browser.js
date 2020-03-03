@@ -1,6 +1,5 @@
 const puppeteer = require('puppeteer');
 const fs = require('fs');
-const path = require('path');
 
 const parseDataUrl = (dataUrl) => {
   const matches = dataUrl.match(/^data:(.+);base64,(.+)$/);
@@ -36,8 +35,8 @@ const htmlTemplate = ({width, height, libPort}) => {
 module.exports = async ({width, height, libPort}) => {
   const browser = await puppeteer.launch({
     args: [
-      '--disable-web-security',
-      '--user-data-dir',
+      '--disable-web-security', 
+      '--user-data-dir', 
       '--no-sandbox',
     ],
   });

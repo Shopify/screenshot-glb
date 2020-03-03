@@ -16,6 +16,7 @@ const argv = require('yargs')
   .alias('h', 'height')
   .alias('f', 'image_format')
   .alias('q', 'image_quality')
+  .alias('t', 'timeout')
   .count('verbose')
   .alias('v', 'verbose')
   .describe('i', 'Input glTF 2.0 binary (GLB) filepath')
@@ -24,6 +25,7 @@ const argv = require('yargs')
   .describe('h', 'Output image height')
   .describe('f', 'Output image format (defaults to \'image/png\')')
   .describe('q', 'Quality of the output image (defaults to 0.92)')
+  .describe('t', 'Timeout length')
   .describe('v', 'Enable verbose logging')
   .demandOption(['i', 'o'])
   .argv;
@@ -68,21 +70,32 @@ function copyModelViewer(){
   const height = argv.height || 1024;
   const format = argv.image_format || 'image/png';
   const quality = argv.image_quality || 0.92;
+  const timeout = argv.timeout || 10000;
 
   const {page, browser} = await startBrowser({width, height, libPort: libServer.port});
 
   const t2 = performance.now();
   INFO("--- Started puppeteer browser", `(${timeDelta(t1, t2)} s)`);
 
+  page.exposeFunction('logInfo', (message) => {
+    INFO(message)
+  });
+  
+  let t3 = performance.now();
   await loadGLBAndScreenshot(page, {
     glbPath,
     outputPath: argv.output,
     format,
     quality,
+    timeout,
+  }).then(()=>{
+    t3 = performance.now();
+    INFO("--- Took snapshot of", argv.input, `(${timeDelta(t2, t3)} s)`);
+  }).catch(()=>{
+    t3 = performance.now();
+    INFO("--- Failed to take snapshot of", argv.input, `(${timeDelta(t2, t3)} s)`);
   });
 
-  const t3 = performance.now();
-  INFO("--- Took snapshot of", argv.input, `(${timeDelta(t2, t3)} s)`);
 
   await browser.close();
   await libServer.stop();
