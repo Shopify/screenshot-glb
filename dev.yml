@@ -1,0 +1,24 @@
+---
+name: screenshot-glb
+
+type: node
+
+up:
+  - railgun
+  - node:
+      version: v8.16.0
+      yarn: true
+      packages:
+        - .
+
+commands:
+  server:
+    aliases: [s]
+    run: yarn server
+
+  build: yarn build
+
+  test: yarn lint && yarn test
+
+open:
+  "My Application": https://screenshot-glb.myshopify.io
