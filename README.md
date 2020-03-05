@@ -15,12 +15,13 @@ To start taking screenshots of GLB files
 ```sh
 $ screenshot-glb
 Options:
-  --help        Show help                                              [boolean]
-  --version     Show version number                                    [boolean]
-  -i, --input   Input glTF 2.0 binary (GLB) filepath                  [required]
-  -o, --output  Output PNG screenshot filepath                        [required]
-  -w, --width   Output image width
-  -h, --height  Output image height
+  --help         Show help                                              [boolean]
+  --version      Show version number                                    [boolean]
+  -i, --input    Input glTF 2.0 binary (GLB) filepath                  [required]
+  -o, --output   Output PNG screenshot filepath                        [required]
+  -w, --width    Output image width
+  -h, --height   Output image height
+  -t, --timeout  Timeout length
 ```
 
 ## Dependencies

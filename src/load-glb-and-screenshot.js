@@ -1,41 +1,32 @@
-const puppeteer = require('puppeteer');
-
-module.exports = async (page, {glbPath, outputPath, format, quality}, timeout) => {
-  return new Promise((resolve) => {
+module.exports = async (page, {glbPath, outputPath, format, quality, timeout}) => {
+  return new Promise((resolve, reject) => {
     page.exposeFunction('resolvePromise', resolve);
-
+    page.exposeFunction('rejectPromise', reject);
     page.evaluate(async (browser_glbPath, browser_outputPath, browser_format, browser_quality, timeout) => {
-      const waitUntil = async (check, interval, timeout) => {
-        var endTime = Number(new Date()) + timeout;
+      var endTime = Number(new Date()) + timeout;
 
-        const checkCondition = (resolve, reject) => {
-          if (check()) {
-            resolve()
-          } else if (Number(new Date()) < endTime) {
-            console.log(`Waiting ${interval}ms for model to render...`);
-            setTimeout(checkCondition, interval, resolve, reject);
-          } else {
-            reject('Wait until timeout');
-          }
+      const isTimedOut = function() {
+        const currentTime = Number(new Date())
+        if (currentTime < endTime) {
+          window.logInfo(`Waiting ${endTime - currentTime}ms for model to render...`);
+        }else{
+          window.rejectPromise('Waited until timeout');
         }
-
-        return new Promise(checkCondition);
       }
 
       modelViewer = document.getElementById('snapshot-viewer');
+      modelViewer.addEventListener('model-visibility', function(){
+        const visible = event.detail.visible;
+        if(visible){
+          window.saveDataUrl(
+            modelViewer.toDataURL(browser_format, browser_quality),
+            browser_outputPath,
+          );
+          window.resolvePromise();
+        }
+        setInterval(isTimedOut, 1000);
+      });
       modelViewer.src = browser_glbPath;
-      document.body.appendChild(modelViewer);
-
-      await waitUntil(() => {
-        return modelViewer.modelIsVisible;
-      }, 1000, timeout || 10000);
-
-      await window.saveDataUrl(
-        modelViewer.toDataURL(browser_format, browser_quality),
-        browser_outputPath,
-      );
-
-      window.resolvePromise();
     }, glbPath, outputPath, format, quality, timeout);
   });
 }
