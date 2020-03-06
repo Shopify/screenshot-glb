@@ -38,27 +38,12 @@ const timeDelta = (start, end) => {
   return ((end - start) / 1000).toPrecision(3);
 }
 
-function copyModelViewer(){
-  const dir = path.resolve(__dirname, '../lib');
-
-  if (!fs.existsSync(dir)){
-      fs.mkdirSync(dir);
-  }
-  fs.copyFile(path.resolve(__dirname, '../node_modules/@google/model-viewer/dist/model-viewer.js'), 
-    path.resolve(__dirname, '../lib/model-viewer.js'), (err) => {
-      if (err) throw err;
-  });
-}
-
 
 (async () => {
-  copyModelViewer()
 
   const t0 = performance.now();
-  const libServer = new FileServer(path.resolve(__dirname, '../lib'))
   const modelServer = new FileServer(path.dirname(argv.input))
 
-  await libServer.start()
   await modelServer.start()
 
   const t1 = performance.now();
@@ -72,11 +57,13 @@ function copyModelViewer(){
   const quality = argv.image_quality || 0.92;
   const timeout = argv.timeout || 10000;
 
-  const {page, browser} = await startBrowser({width, height, libPort: libServer.port});
-
+  const {page, browser} = await startBrowser({width, height});
+  
   const t2 = performance.now();
   INFO("--- Started puppeteer browser", `(${timeDelta(t1, t2)} s)`);
-
+  
+  await page.addScriptTag({ path: './node_modules/@google/model-viewer/dist/model-viewer.js', type: 'module'});
+  
   page.exposeFunction('logInfo', (message) => {
     INFO(message)
   });
@@ -98,7 +85,6 @@ function copyModelViewer(){
 
 
   await browser.close();
-  await libServer.stop();
   await modelServer.stop();
 
   const t4 = performance.now();

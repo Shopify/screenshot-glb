@@ -15,9 +15,6 @@ const htmlTemplate = ({width, height, libPort}) => {
   return `
     <html>
       <head>
-        <script type="module"
-          src="http://localhost:${libPort}/model-viewer.js">
-        </script>
         <style>
           #snapshot-viewer {
             width: ${width};
