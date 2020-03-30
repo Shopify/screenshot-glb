@@ -44,12 +44,15 @@ function copyModelViewer(){
   if (!fs.existsSync(dir)){
       fs.mkdirSync(dir);
   }
-  fs.copyFile(path.resolve(__dirname, '../node_modules/@google/model-viewer/dist/model-viewer.js'), 
-    path.resolve(__dirname, '../lib/model-viewer.js'), (err) => {
-      if (err) throw err;
+
+  const modelViewerDirectory = path.dirname(path.dirname(require.resolve('@google/model-viewer')));
+  const srcFile = path.resolve(modelViewerDirectory, 'dist/model-viewer.js');
+  const destFile = path.resolve(__dirname, '../lib/model-viewer.js');  
+  
+  fs.copyFile(srcFile, destFile, (err) => {
+    if (err) throw err;
   });
 }
-
 
 (async () => {
   copyModelViewer()
