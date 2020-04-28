@@ -34,18 +34,50 @@ const htmlTemplate = ({width, height, libPort}) => {
 }
 
 module.exports = async ({width, height, libPort}) => {
-  const browser = await puppeteer.launch({
-    args: [
-      '--disable-web-security',
-      '--user-data-dir',
-      '--no-sandbox',
-    ],
+  const browserWSEndpointFilename = "/tmp/screenshot-glb-browserWSEndpoint";
+
+  let browserWSEndpoint = null;
+  try {
+    browserWSEndpoint = fs.readFileSync(browserWSEndpointFilename, 'utf8');
+  } catch (err) {
+  }
+
+  if (!browserWSEndpoint) {
+    console.log('no endpoint file available, launching...');
+
+    let browser = await puppeteer.launch({
+      args: [
+        '--disable-web-security',
+        '--user-data-dir',
+        '--no-sandbox',
+      ],
+    });
+
+    browserWSEndpoint = browser.wsEndpoint();
+
+    browser.disconnect();
+  } else {
+    console.log('endpoint file found, trying to connect', browserWSEndpoint);
+  }
+
+  fs.writeFile(browserWSEndpointFilename, browserWSEndpoint, function(err) {
+    if(err) {
+        return console.log(err);
+    }
+    console.log('writing endpoint file');
+  });
+
+  browser = await puppeteer.connect({
+    browserWSEndpoint,
+  }).catch(e => {
+    console.log('error on connect');
+    console.log(e);
   });
 
   const page = await browser.newPage();
 
   await page.setViewport({
-    width, 
+    width,
     height,
     deviceScaleFactor: 1,
   });
@@ -60,7 +92,7 @@ module.exports = async ({width, height, libPort}) => {
   });
 
   page.exposeFunction('shutdown', async () => {
-    await browser.close();
+    await browser.disconnect();
   });
 
   return {page, browser};
