@@ -83,6 +83,8 @@ function copyModelViewer(){
   page.exposeFunction('logInfo', (message) => {
     INFO(message)
   });
+
+  page.on('console', msg => INFO("--- Console output: ", msg.text()));
   
   let t3 = performance.now();
   await loadGLBAndScreenshot(page, {
