@@ -6,10 +6,16 @@ var fs = require('fs');
 
 const FileServer = require('./file-server');
 
-const startBrowser = require('./start-browser')
+const startBrowser = require('./start-browser');
+const launchBrowser = require('./launch-browser');
+
 const loadGLBAndScreenshot = require('./load-glb-and-screenshot');
 
 const argv = require('yargs')
+  .boolean("launcher-mode")
+  .boolean("connect-mode")
+  .alias('po', 'path_output')
+  .alias('pi', 'path_input')
   .alias('i', 'input')
   .alias('o', 'output')
   .alias('w', 'width')
@@ -19,6 +25,10 @@ const argv = require('yargs')
   .alias('t', 'timeout')
   .count('verbose')
   .alias('v', 'verbose')
+  .describe('launcher-mode', 'Launches and keeps the browser open for connections.')
+  .describe('po', 'Launcher will save connection details to the path_output')
+  .describe('connect-mode', 'Connect to the existing browser specified by path_input')
+  .describe('pi', 'Input file containing details of an existing connection')
   .describe('i', 'Input glTF 2.0 binary (GLB) filepath')
   .describe('o', 'Output PNG screenshot filepath')
   .describe('w', 'Output image width')
@@ -27,7 +37,7 @@ const argv = require('yargs')
   .describe('q', 'Quality of the output image (defaults to 0.92)')
   .describe('t', 'Timeout length')
   .describe('v', 'Enable verbose logging')
-  .demandOption(['i', 'o'])
+  // .demandOption(['i', 'o'])
   .argv;
 
 const VERBOSE_LEVEL = argv.verbose;
@@ -52,9 +62,14 @@ function copyModelViewer(){
   fs.copyFile(srcFile, destFile, (err) => {
     if (err) throw err;
   });
-}
+}  
 
 (async () => {
+  if (argv['launcher-mode'] && argv.po) {
+    await launchBrowser({outputPath: argv.po});
+    return;
+  }
+
   copyModelViewer()
 
   const t0 = performance.now();
@@ -75,7 +90,18 @@ function copyModelViewer(){
   const quality = argv.image_quality || 0.92;
   const timeout = argv.timeout || 10000;
 
-  const {page, browser} = await startBrowser({width, height, libPort: libServer.port});
+  var wsEndpoint = null;
+
+  if (argv['connect-mode'] && argv.pi) {
+    try {
+      wsEndpoint = fs.readFileSync(argv.pi);
+    } catch (err) {
+      // todo do something
+      console.log(`Failed to read ${argv.pi}`);      
+    }
+  }
+
+  const {page, browser} = await startBrowser({width, height, libPort: libServer.port, wsEndpoint});
 
   const t2 = performance.now();
   INFO("--- Started puppeteer browser", `(${timeDelta(t1, t2)} s)`);
@@ -101,8 +127,12 @@ function copyModelViewer(){
     INFO("--- Failed to take snapshot of", argv.input, `(${timeDelta(t2, t3)} s)`);
   });
 
-
-  await browser.close();
+  if (argv['connect-mode'] && argv.pi) {
+    await browser.disconnect();
+  }  else {
+    await browser.close();
+  }
+  
   await libServer.stop();
   await modelServer.stop();
 
