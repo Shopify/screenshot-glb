@@ -32,14 +32,25 @@ const htmlTemplate = ({width, height, libPort}) => {
   `
 }
 
-module.exports = async ({width, height, libPort}) => {
-  const browser = await puppeteer.launch({
-    args: [
-      '--disable-web-security', 
-      '--user-data-dir', 
-      '--no-sandbox',
-    ],
-  });
+module.exports = async ({width, height, libPort, wsEndpoint}) => {
+  var browser;
+  if (wsEndpoint) {
+    browser = await puppeteer.connect({
+      browserWSEndpoint: wsEndpoint
+    }).catch(e => {
+      console.log("failed to connect");
+      console.log(e);
+      return;
+    })
+  } else {
+    browser = await puppeteer.launch({
+      args: [
+        '--disable-web-security', 
+        '--user-data-dir', 
+        '--no-sandbox',
+      ],
+    });
+  }
 
   const page = await browser.newPage();
 
@@ -59,7 +70,11 @@ module.exports = async ({width, height, libPort}) => {
   });
 
   page.exposeFunction('shutdown', async () => {
-    await browser.close();
+    if (wsEndpoint) {
+      await browser.disconnect();
+    } else {
+      await browser.close();
+    }
   });
 
   return {page, browser};
