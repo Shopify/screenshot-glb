@@ -87,20 +87,21 @@ function copyModelViewer(){
   page.on('console', msg => INFO("--- Console output: ", msg.text()));
   
   let t3 = performance.now();
-  await loadGLBAndScreenshot(page, {
-    glbPath,
-    outputPath: argv.output,
-    format,
-    quality,
-    timeout,
-  }).then(()=>{
+
+  process_status = 0;
+
+  try {
+    await loadGLBAndScreenshot(page, { glbPath, outputPath: argv.output, format, quality, timeout });
     t3 = performance.now();
     INFO("--- Took snapshot of", argv.input, `(${timeDelta(t2, t3)} s)`);
-  }).catch(()=>{
+  } catch (err) {
     t3 = performance.now();
     INFO("--- Failed to take snapshot of", argv.input, `(${timeDelta(t2, t3)} s)`);
-  });
-
+    INFO("--- Error Info Start")
+    INFO(err);
+    INFO("--- Error Info End")
+    process_status = 1;
+  }
 
   await browser.close();
   await libServer.stop();
@@ -108,5 +109,7 @@ function copyModelViewer(){
 
   const t4 = performance.now();
   INFO("--- Stopped local file servers", `(${timeDelta(t3, t4)} s)`);
-  INFO("--- DONE");
+  INFO(`--- DONE. Exiting with status=${process_status}`);
+
+  process.exit(process_status);
 })()
