@@ -1,8 +1,6 @@
-module.exports = async (page, {glbPath, outputPath, format, quality, timeout}) => {
-  return new Promise(async (resolve, reject) => {
-    page.exposeFunction('resolvePromise', resolve);
-    page.exposeFunction('rejectPromise', reject);
-    await page.evaluate(async (browser_glbPath, browser_outputPath, browser_format, browser_quality, timeout) => {
+module.exports = (page, {glbPath, outputPath, format, quality, timeout}) => {
+  return page.evaluate((browser_glbPath, browser_outputPath, browser_format, browser_quality, timeout) => {
+    return new Promise((resolve, reject) => {
       var startTime = Number(new Date());
       var endTime = startTime + timeout;
 
@@ -11,7 +9,7 @@ module.exports = async (page, {glbPath, outputPath, format, quality, timeout}) =
         if (currentTime < endTime) {
           window.logInfo(`--- Waited ${currentTime - startTime}ms for model to render. ${endTime - currentTime}ms left until timeout.`);
         } else {
-          window.rejectPromise('Waited until timeout');
+          reject('Waited until timeout');
         }
       }
 
@@ -19,17 +17,28 @@ module.exports = async (page, {glbPath, outputPath, format, quality, timeout}) =
       timeoutSet = setInterval(isTimedOut, 1000);
 
       modelViewer.addEventListener('model-visibility', function(){
-        const visible = event.detail.visible;
-        if(visible){
-          window.saveDataUrl(
-            modelViewer.toDataURL(browser_format, browser_quality),
-            browser_outputPath,
-          );
-          clearTimeout(timeoutSet);
-          window.resolvePromise();
+        try {
+          const visible = event.detail.visible;
+          if(visible){
+            let t0 = Number(new Date());
+            window.saveDataUrl(
+              modelViewer.toDataURL(browser_format, browser_quality),
+              browser_outputPath,
+            );
+
+            let t1 = Number(new Date());
+
+            clearTimeout(timeoutSet);
+
+            window.logInfo(`--- Waited ${t1 - t0}ms for saveDataUrl to finish.`);
+
+            resolve("Success");
+          }
+        } catch(err) {
+          reject(err);
         }
       });
       modelViewer.src = browser_glbPath;
-    }, glbPath, outputPath, format, quality, timeout);
-  });
+    });
+  }, glbPath, outputPath, format, quality, timeout);
 }
