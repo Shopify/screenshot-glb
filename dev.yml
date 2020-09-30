@@ -6,7 +6,7 @@ type: node
 up:
   - railgun
   - node:
-      version: v8.16.0
+      version: v14.3.0
       yarn: true
       packages:
         - .
