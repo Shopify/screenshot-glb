@@ -12,6 +12,7 @@ const loadGLBAndScreenshot = require('./load-glb-and-screenshot');
 const argv = require('yargs')
   .alias('i', 'input')
   .alias('o', 'output')
+  .alias('c', 'color')
   .alias('w', 'width')
   .alias('h', 'height')
   .alias('f', 'image_format')
@@ -20,11 +21,12 @@ const argv = require('yargs')
   .count('verbose')
   .alias('v', 'verbose')
   .describe('i', 'Input glTF 2.0 binary (GLB) filepath')
-  .describe('o', 'Output PNG screenshot filepath')
+  .describe('o', 'Output screenshot filepath')
   .describe('w', 'Output image width')
   .describe('h', 'Output image height')
   .describe('f', 'Output image format (defaults to \'image/png\')')
   .describe('q', 'Quality of the output image (defaults to 0.92)')
+  .describe('c', 'Output image background color (defaults to transparent, accepts HEX or RGB)')
   .describe('t', 'Timeout length')
   .describe('v', 'Enable verbose logging')
   .demandOption(['i', 'o'])
@@ -74,6 +76,7 @@ function copyModelViewer(){
   const format = argv.image_format || 'image/png';
   const quality = argv.image_quality || 0.92;
   const timeout = argv.timeout || 10000;
+  const backgroundColor = argv.color || 'transparent'
 
   const {page, browser} = await startBrowser({width, height, libPort: libServer.port});
 
@@ -91,7 +94,7 @@ function copyModelViewer(){
   process_status = 0;
 
   try {
-    await loadGLBAndScreenshot(page, { glbPath, outputPath: argv.output, format, quality, timeout });
+    await loadGLBAndScreenshot(page, { glbPath, outputPath: argv.output, backgroundColor, format, quality, timeout });
     t3 = performance.now();
     INFO("--- Took snapshot of", argv.input, `(${timeDelta(t2, t3)} s)`);
   } catch (err) {

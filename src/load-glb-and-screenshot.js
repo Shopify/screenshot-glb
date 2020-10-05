@@ -1,5 +1,5 @@
-module.exports = (page, {glbPath, outputPath, format, quality, timeout}) => {
-  return page.evaluate((browser_glbPath, browser_outputPath, browser_format, browser_quality, timeout) => {
+module.exports = (page, {glbPath, outputPath, backgroundColor, format, quality, timeout}) => {
+  return page.evaluate((browser_glbPath, browser_outputPath, backgroundColor, browser_format, browser_quality, timeout) => {
     return new Promise((resolve, reject) => {
       var startTime = Number(new Date());
       var endTime = startTime + timeout;
@@ -13,16 +13,48 @@ module.exports = (page, {glbPath, outputPath, format, quality, timeout}) => {
         }
       }
 
-      modelViewer = document.getElementById('snapshot-viewer');
-      timeoutSet = setInterval(isTimedOut, 1000);
+      const rafAsync = function() {
+        return new Promise(resolve => {
+            requestAnimationFrame(resolve);
+        });
+      }
 
-      modelViewer.addEventListener('model-visibility', function(){
+      const checkElementExists = async function(element) {
+        while (element === null) {
+            await rafAsync()
+        }
+        return querySelector;
+      }  
+
+      const modelViewerCanvas = async function(resolveCanvas){
+        checkElementExists(modelViewer.shadowRoot)
+        const srcCanvas = modelViewer.shadowRoot.getElementById('webgl-canvas');
+        checkElementExists(srcCanvas)
+        if(backgroundColor === 'transparent'){
+          resolveCanvas(srcCanvas);
+        }
+        const destinationCanvas = document.createElement("canvas");
+        destinationCanvas.width = srcCanvas.width;
+        destinationCanvas.height = srcCanvas.height;
+
+        const destCtx = destinationCanvas.getContext('2d');
+        destCtx.fillStyle = backgroundColor;
+        destCtx.fillRect(0,0,srcCanvas.width,srcCanvas.height);
+        
+        destCtx.drawImage(srcCanvas, 0, 0);
+
+        
+        resolveCanvas(destinationCanvas);
+      }
+
+      const modelViewerVisibleCallback = async function (event){
         try {
           const visible = event.detail.visible;
           if(visible){
             let t0 = Number(new Date());
+            const canvas = await new Promise(modelViewerCanvas)
             window.saveDataUrl(
-              modelViewer.toDataURL(browser_format, browser_quality),
+              canvas.toDataURL(browser_format, browser_quality),
               browser_outputPath,
             );
 
@@ -37,8 +69,13 @@ module.exports = (page, {glbPath, outputPath, format, quality, timeout}) => {
         } catch(err) {
           reject(err);
         }
-      });
+      }
+
+      modelViewer = document.getElementById('snapshot-viewer');
+      timeoutSet = setInterval(isTimedOut, 1000);
+
+      modelViewer.addEventListener('model-visibility', modelViewerVisibleCallback)
       modelViewer.src = browser_glbPath;
     });
-  }, glbPath, outputPath, format, quality, timeout);
+  }, glbPath, outputPath, backgroundColor, format, quality, timeout);
 }
