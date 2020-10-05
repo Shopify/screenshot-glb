@@ -12,6 +12,7 @@
   "license": "MIT",
   "dependencies": {
     "@google/model-viewer": "^1.2.1",
+    "mime-types": "^2.1.27",
     "puppeteer": "^5.3.1",
     "yargs": "^13.3.0"
   }

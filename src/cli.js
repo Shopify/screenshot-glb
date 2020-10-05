@@ -8,6 +8,8 @@ const FileServer = require('./file-server');
 
 const startBrowser = require('./start-browser')
 const loadGLBAndScreenshot = require('./load-glb-and-screenshot');
+const scrubOutput = require('./scrub-output');
+const colors = require('./colors.js')
 
 const argv = require('yargs')
   .alias('i', 'input')
@@ -73,10 +75,11 @@ function copyModelViewer(){
 
   const width = argv.width || 1024;
   const height = argv.height || 1024;
-  const format = argv.image_format || 'image/png';
   const quality = argv.image_quality || 0.92;
   const timeout = argv.timeout || 10000;
-  const backgroundColor = argv.color || 'transparent'
+  const [output, format] = scrubOutput(argv.output, argv.image_format)
+  const defaultBackgroundColor = (format === 'image/jpeg' ? colors.white : colors.transparent);
+  const backgroundColor = argv.color || defaultBackgroundColor;
 
   const {page, browser} = await startBrowser({width, height, libPort: libServer.port});
 
@@ -94,7 +97,7 @@ function copyModelViewer(){
   process_status = 0;
 
   try {
-    await loadGLBAndScreenshot(page, { glbPath, outputPath: argv.output, backgroundColor, format, quality, timeout });
+    await loadGLBAndScreenshot(page, { glbPath, outputPath: output, backgroundColor, format, quality, timeout });
     t3 = performance.now();
     INFO("--- Took snapshot of", argv.input, `(${timeDelta(t2, t3)} s)`);
   } catch (err) {

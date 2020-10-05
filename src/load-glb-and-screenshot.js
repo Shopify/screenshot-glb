@@ -1,5 +1,6 @@
+const colors = require('./colors')
 module.exports = (page, {glbPath, outputPath, backgroundColor, format, quality, timeout}) => {
-  return page.evaluate((browser_glbPath, browser_outputPath, backgroundColor, browser_format, browser_quality, timeout) => {
+  return page.evaluate((browser_glbPath, browser_outputPath, backgroundColor, image_format, browser_quality, timeout, colors) => {
     return new Promise((resolve, reject) => {
       var startTime = Number(new Date());
       var endTime = startTime + timeout;
@@ -23,14 +24,14 @@ module.exports = (page, {glbPath, outputPath, backgroundColor, format, quality, 
         while (element === null) {
             await rafAsync()
         }
-        return querySelector;
+        return element;
       }  
 
       const modelViewerCanvas = async function(resolveCanvas){
         checkElementExists(modelViewer.shadowRoot)
         const srcCanvas = modelViewer.shadowRoot.getElementById('webgl-canvas');
         checkElementExists(srcCanvas)
-        if(backgroundColor === 'transparent'){
+        if(backgroundColor === colors.transparent){
           resolveCanvas(srcCanvas);
         }
         const destinationCanvas = document.createElement("canvas");
@@ -54,7 +55,7 @@ module.exports = (page, {glbPath, outputPath, backgroundColor, format, quality, 
             let t0 = Number(new Date());
             const canvas = await new Promise(modelViewerCanvas)
             window.saveDataUrl(
-              canvas.toDataURL(browser_format, browser_quality),
+              canvas.toDataURL(image_format, browser_quality),
               browser_outputPath,
             );
 
@@ -77,5 +78,5 @@ module.exports = (page, {glbPath, outputPath, backgroundColor, format, quality, 
       modelViewer.addEventListener('model-visibility', modelViewerVisibleCallback)
       modelViewer.src = browser_glbPath;
     });
-  }, glbPath, outputPath, backgroundColor, format, quality, timeout);
+  }, glbPath, outputPath, backgroundColor, format, quality, timeout, colors);
 }
