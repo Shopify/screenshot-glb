@@ -19,43 +19,38 @@ const saveDataUrl = function(dataUrl, outputPath){
 const evaluatePage = function({options, colors}){ 
 
   const modelViewerCanvas = function(srcCanvas){
-    return new Promise(async (resolve) => {
-      const {width, height, backgroundColor} = options;
-      if(backgroundColor === colors.transparent){
-        resolve(srcCanvas);
-      }
-      const destinationCanvas = document.createElement("canvas");
-      destinationCanvas.width = width;
-      destinationCanvas.height = height;
+    const {width, height, backgroundColor} = options;
+    if(backgroundColor === colors.transparent){
+      return srcCanvas;
+    }
+    const destinationCanvas = document.createElement("canvas");
+    destinationCanvas.width = width;
+    destinationCanvas.height = height;
 
-      const destCtx = destinationCanvas.getContext('2d');
-      destCtx.fillStyle = backgroundColor;
-      destCtx.fillRect(0,0,width,height);
-      
-      destCtx.drawImage(srcCanvas, 0, 0);
-      
-      resolve(destinationCanvas);
-    });
+    const destCtx = destinationCanvas.getContext('2d');
+    destCtx.fillStyle = backgroundColor;
+    destCtx.fillRect(0,0,width,height);
+    
+    destCtx.drawImage(srcCanvas, 0, 0);
+
+    return destinationCanvas;
   };
 
   const takeScreenshot = function (srcCanvas, timeout){
-    return new Promise(async (resolve) => {
-      const {outputPath, format, quality} = options;
-      let t0 = Number(new Date());
-      const updatedCanvas = await modelViewerCanvas(srcCanvas, options);
-      window.saveDataUrl(
-        updatedCanvas.toDataURL(format, quality),
-        outputPath,
-      );
+    const {outputPath, format, quality} = options;
+    let t0 = Number(new Date());
+    const updatedCanvas = modelViewerCanvas(srcCanvas, options);
+    window.saveDataUrl(
+      updatedCanvas.toDataURL(format, quality),
+      outputPath,
+    );
 
-      let t1 = Number(new Date());
-      window.logInfo(`--- Waited ${t1 - t0}ms for saveDataUrl to finish.`);
-      clearTimeout(timeout);
-      resolve('takeScreenshot Success')
-    });
+    let t1 = Number(new Date());
+    window.logInfo(`--- Waited ${t1 - t0}ms for saveDataUrl to finish.`);
+    clearTimeout(timeout);
   };
 
-  return new Promise(async (resolve, reject) => {
+  return new Promise((resolve, reject) => {
     const {timeout} = options;
     const startTime = Number(new Date());
     let endTime = startTime + timeout;
@@ -71,8 +66,7 @@ const evaluatePage = function({options, colors}){
     const modelViewer = document.getElementById('snapshot-viewer');
     const srcCanvas = modelViewer.shadowRoot.getElementById("webgl-canvas");
     timeoutSet = setInterval(isTimedOut, 1000);
-    timeoutSet = 'nil';
-    await takeScreenshot(srcCanvas, timeoutSet);
+    takeScreenshot(srcCanvas, timeoutSet);
     resolve('evaluatePage Success')
   });
 }
