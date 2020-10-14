@@ -50,7 +50,7 @@ const evaluatePage = function({options, colors}){
     clearTimeout(timeout);
   };
 
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     const {timeout} = options;
     const startTime = Number(new Date());
     let endTime = startTime + timeout;
@@ -66,6 +66,8 @@ const evaluatePage = function({options, colors}){
     const modelViewer = document.getElementById('snapshot-viewer');
     const srcCanvas = modelViewer.shadowRoot.getElementById("webgl-canvas");
     timeoutSet = setInterval(isTimedOut, 1000);
+    modelViewer.jumpCameraToGoal(); 
+    await new Promise(resolve => requestAnimationFrame(() => resolve())); 
     takeScreenshot(srcCanvas, timeoutSet);
     resolve('evaluatePage Success')
   });
