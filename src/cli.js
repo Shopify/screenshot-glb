@@ -7,7 +7,7 @@ var fs = require('fs');
 const FileServer = require('./file-server');
 
 const startBrowser = require('./start-browser')
-const loadGLBAndScreenshot = require('./load-glb-and-screenshot');
+const screenshot = require('./screenshot');
 const scrubOutput = require('./scrub-output');
 const colors = require('./colors.js')
 
@@ -20,6 +20,7 @@ const argv = require('yargs')
   .alias('f', 'image_format')
   .alias('q', 'image_quality')
   .alias('t', 'timeout')
+  .alias('d', 'debug')
   .count('verbose')
   .alias('v', 'verbose')
   .describe('i', 'Input glTF 2.0 binary (GLB) filepath')
@@ -31,10 +32,19 @@ const argv = require('yargs')
   .describe('c', 'Output image background color (defaults to transparent, accepts HEX or RGB)')
   .describe('t', 'Timeout length')
   .describe('v', 'Enable verbose logging')
+  .describe('d', 'Enable Debug Mode')
   .demandOption(['i', 'o'])
   .argv;
 
-const VERBOSE_LEVEL = argv.verbose;
+
+let DEBUG = false;
+let VERBOSE_LEVEL = 0;
+if(argv.debug) {
+  DEBUG = true;
+  VERBOSE_LEVEL = 1;
+}else{
+  VERBOSE_LEVEL = argv.verbose
+}
 
 function INFO() { VERBOSE_LEVEL >= 1 && console.log.apply(console, arguments); }
 
@@ -72,16 +82,23 @@ function copyModelViewer(){
   INFO("--- Started local file servers", `(${timeDelta(t0, t1)} s)`);
 
   const glbPath = `http://localhost:${modelServer.port}/${path.basename(argv.input)}`;
-
-  const width = argv.width || 1024;
-  const height = argv.height || 1024;
-  const quality = argv.image_quality || 0.92;
-  const timeout = argv.timeout || 10000;
-  const [output, format] = scrubOutput(argv.output, argv.image_format)
+  const [output, format] = scrubOutput(argv.output, argv.image_format);
   const defaultBackgroundColor = (format === 'image/jpeg' ? colors.white : colors.transparent);
-  const backgroundColor = argv.color || defaultBackgroundColor;
 
-  const {page, browser} = await startBrowser({width, height, libPort: libServer.port});
+  options = {
+    inputPath: glbPath,
+    outputPath: output,
+    format: format,
+    backgroundColor: argv.color || defaultBackgroundColor,
+    qualtity: argv.image_quality || 0.92,
+    timeout: argv.timeout || 10000,
+    height: argv.height || 1024,
+    width: argv.width || 1024,
+    libPort: libServer.port,
+    debug: DEBUG,
+  }
+
+  const {page, browser} = await startBrowser(options);
 
   const t2 = performance.now();
   INFO("--- Started puppeteer browser", `(${timeDelta(t1, t2)} s)`);
@@ -97,7 +114,7 @@ function copyModelViewer(){
   process_status = 0;
 
   try {
-    await loadGLBAndScreenshot(page, { glbPath, outputPath: output, backgroundColor, format, quality, timeout });
+    await screenshot(page, options);
     t3 = performance.now();
     INFO("--- Took snapshot of", argv.input, `(${timeDelta(t2, t3)} s)`);
   } catch (err) {
