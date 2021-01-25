@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@google/model-viewer@^1.2.1":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@google/model-viewer/-/model-viewer-1.2.1.tgz#36b4cbeed5ba79680854ea9cafe4cd2f07a89454"
-  integrity sha512-ODlQF0QaEqlLuAIPVvJiURnyVARahf4Kj4fBVxYFtTNg60eOyvuDib+bRyWgETUuScBPG0+hn15hMPwDId1oLg==
+"@google/model-viewer@^1.4.1":
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/@google/model-viewer/-/model-viewer-1.4.1.tgz#55e1cfb0cddd0f1b92d6d746335de0bac7e98f0c"
+  integrity sha512-8kZO4YJuthY9P8EbwPaitfw3Kb+ci5LRBn1WEY/oHiUCyo41safcL2JeqLLA6+oy2Dwd8bPqCiOyWfdvitaCbA==
 
 "@types/node@*":
   version "14.11.2"
