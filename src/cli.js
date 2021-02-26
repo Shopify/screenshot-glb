@@ -2,13 +2,14 @@
 
 const path = require('path');
 const { performance } = require('perf_hooks');
-const fs = require('fs');
+var fs = require('fs');
 
 const FileServer = require('./file-server');
-const prepareAppOptions = require('./prepare-app-options');
+
 const startBrowser = require('./start-browser')
 const screenshot = require('./screenshot');
-
+const scrubOutput = require('./scrub-output');
+const colors = require('./colors.js')
 
 const argv = require('yargs')
   .alias('i', 'input')
@@ -34,6 +35,7 @@ const argv = require('yargs')
   .describe('d', 'Enable Debug Mode')
   .demandOption(['i', 'o'])
   .argv;
+
 
 let DEBUG = false;
 let VERBOSE_LEVEL = 0;
@@ -79,12 +81,23 @@ function copyModelViewer(){
   const t1 = performance.now();
   INFO("--- Started local file servers", `(${timeDelta(t0, t1)} s)`);
 
-  const options = prepareAppOptions({
+  const glbPath = `http://localhost:${modelServer.port}/${path.basename(argv.input)}`;
+  const [output, format] = scrubOutput(argv.output, argv.image_format);
+  const defaultBackgroundColor = (format === 'image/jpeg' ? colors.white : colors.transparent);
+
+  options = {
+    inputPath: glbPath,
+    outputPath: output,
+    format: format,
+    backgroundColor: argv.color || defaultBackgroundColor,
+    qualtity: argv.image_quality || 0.92,
+    timeout: argv.timeout || 10000,
+    height: argv.height || 1024,
+    width: argv.width || 1024,
     libPort: libServer.port,
-    modelPort: modelServer.port,
     debug: DEBUG,
-    argv,
-  });
+  }
+
   const {page, browser} = await startBrowser(options);
 
   const t2 = performance.now();
@@ -122,4 +135,4 @@ function copyModelViewer(){
   INFO(`--- DONE. Exiting with status=${process_status}`);
 
   process.exit(process_status);
-})();
+})()

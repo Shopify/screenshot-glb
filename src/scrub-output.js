@@ -15,7 +15,7 @@ const validExtension = function(extension, format){
 }
 
 module.exports = (output, imageFormat) => {
-  const format = imageFormat || mime.lookup(output) || 'image/png';
+  const format = imageFormat || mime.lookup(output) || 'image/png'
   const extension = path.extname(output);
   if(extension && validExtension(extension, format)) return [output, format];
   return [appendExtension(output, format), format]
