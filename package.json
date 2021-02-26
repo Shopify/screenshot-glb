@@ -8,6 +8,11 @@
   "bin": {
     "screenshot-glb": "./src/cli.js"
   },
+  "scripts": {
+    "lint": "echo \"linting not implemented\"",
+    "test": "jest",
+    "dev": "node src/cli.js -i ./test/fixtures/Astronaut.glb -o output.jpg -f image/jpeg -q 1.00 -v -t 30000"
+  },
   "author": "Stephan Leroux <stephan.leroux@shopify.com>",
   "license": "MIT",
   "dependencies": {
@@ -15,5 +20,8 @@
     "mime-types": "^2.1.27",
     "puppeteer": "^5.3.1",
     "yargs": "^13.3.0"
+  },
+  "devDependencies": {
+    "jest": "^26.6.3"
   }
 }
