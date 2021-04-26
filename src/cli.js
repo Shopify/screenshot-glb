@@ -45,9 +45,9 @@ function copyModelViewer(){
       fs.mkdirSync(dir);
   }
 
-  const modelViewerDirectory = path.dirname(path.dirname(require.resolve('@google/model-viewer')));
-  const srcFile = path.resolve(modelViewerDirectory, 'dist/model-viewer.js');
-  const destFile = path.resolve(__dirname, '../lib/model-viewer.js');  
+//  const modelViewerDirectory = path.dirname(path.dirname(require.resolve('@google/model-viewer')));
+  const srcFile = path.resolve(__dirname, "../node_modules/@google/model-viewer/", 'dist/model-viewer.min.js');
+  const destFile = path.resolve(__dirname, '../lib/model-viewer.min.js');  
   
   fs.copyFile(srcFile, destFile, (err) => {
     if (err) throw err;
@@ -73,7 +73,7 @@ function copyModelViewer(){
   const height = argv.height || 1024;
   const format = argv.image_format || 'image/png';
   const quality = argv.image_quality || 0.92;
-  const timeout = argv.timeout || 10000;
+  const timeout = argv.timeout || 30000;
 
   const {page, browser} = await startBrowser({width, height, libPort: libServer.port});
 

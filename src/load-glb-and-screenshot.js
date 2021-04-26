@@ -20,6 +20,7 @@ module.exports = (page, {glbPath, outputPath, format, quality, timeout}) => {
         try {
           const visible = event.detail.visible;
           if(visible){
+           console.info("visible")
             let t0 = Number(new Date());
             window.saveDataUrl(
               modelViewer.toDataURL(browser_format, browser_quality),

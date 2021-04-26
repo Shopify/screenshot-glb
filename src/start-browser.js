@@ -16,17 +16,20 @@ const htmlTemplate = ({width, height, libPort}) => {
     <html>
       <head>
         <script type="module"
-          src="http://localhost:${libPort}/model-viewer.js">
+          src="http://localhost:${libPort}/model-viewer.min.js">
         </script>
         <style>
           #snapshot-viewer {
             width: ${width};
             height: ${height};
           }
+          model-viewer {
+           background-color: #70BCD1;
+         }
         </style>
       </head>
       <body>
-        <model-viewer id="snapshot-viewer" />
+        <model-viewer shadow-intensity="1" id="snapshot-viewer" />
       </body>
     </html>
   `
@@ -46,12 +49,41 @@ module.exports = async ({width, height, libPort}) => {
   await page.setViewport({
     width, 
     height,
-    deviceScaleFactor: 1,
+    deviceScaleFactor: 2,
   });
 
   const data = htmlTemplate({width, height, libPort});
 
   await page.setContent(data);
+
+
+/*   await page.evaluate(async () => {
+      const modelBecomesReady = self.modelLoaded ?
+          Promise.resolve() :
+          new Promise((resolve, reject) => {
+            const timeout = setTimeout(reject, 6000);
+
+            self.addEventListener('model-ready', () => {
+              clearTimeout(timeout);
+              resolve();
+            }, {once: true});
+          });
+
+      await modelBecomesReady;
+    });
+
+    console.log(`🖼  Capturing screenshot`);
+
+    try {
+      await fs.mkdir(this.outputDirectory);
+    } catch (e) {
+      // Ignored...
+    }
+
+    const screenshot = await page.screenshot({path: outputPath});
+
+    await browser.close()
+*/
 
   page.exposeFunction('saveDataUrl', async (dataUrl, outputPath) => {
     const buffer = parseDataUrl(dataUrl);
