@@ -13,7 +13,7 @@ const createFileServer = (mountDirectory) => {
 
     const contentType = mimeTypes[extname] || 'application/octet-stream';
     const headers = {
-      'Content-Type': contentType, 
+      'Content-Type': contentType,
       'Access-Control-Allow-Origin': '*'
     }
 
@@ -58,11 +58,11 @@ module.exports = class FileServer {
     return new Promise((resolve) => {
       this.server.close(() => {
         resolve();
-      }) 
+      })
     }).then(() => {
       this.server = null;
       this.port = null;
       return Promise.resolve();
     })
-  } 
+  }
 };

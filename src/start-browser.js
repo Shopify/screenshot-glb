@@ -35,7 +35,7 @@ const startBrowser = async function(options){
     const page = await browser.newPage();
 
     await page.setViewport({
-      width, 
+      width,
       height,
       deviceScaleFactor: 1,
     });

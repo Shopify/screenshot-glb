@@ -16,7 +16,7 @@ const saveDataUrl = function(dataUrl, outputPath){
   fs.writeFileSync(outputPath, buffer, 'base64');
 }
 
-const evaluatePage = function({options, colors}){ 
+const evaluatePage = function({options, colors}){
 
   const modelViewerCanvas = function(srcCanvas){
     const {width, height, backgroundColor} = options;
@@ -30,7 +30,7 @@ const evaluatePage = function({options, colors}){
     const destCtx = destinationCanvas.getContext('2d');
     destCtx.fillStyle = backgroundColor;
     destCtx.fillRect(0,0,width,height);
-    
+
     destCtx.drawImage(srcCanvas, 0, 0);
 
     return destinationCanvas;
@@ -66,8 +66,8 @@ const evaluatePage = function({options, colors}){
     const modelViewer = document.getElementById('snapshot-viewer');
     const srcCanvas = modelViewer.shadowRoot.getElementById("webgl-canvas");
     timeoutSet = setInterval(isTimedOut, 1000);
-    modelViewer.jumpCameraToGoal(); 
-    await new Promise(resolve => requestAnimationFrame(() => resolve())); 
+    modelViewer.jumpCameraToGoal();
+    await new Promise(resolve => requestAnimationFrame(() => resolve()));
     takeScreenshot(srcCanvas, timeoutSet);
     resolve('evaluatePage Success')
   });

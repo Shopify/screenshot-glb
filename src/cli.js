@@ -59,8 +59,8 @@ function copyModelViewer(){
 
   const modelViewerDirectory = path.dirname(path.dirname(require.resolve('@google/model-viewer')));
   const srcFile = path.resolve(modelViewerDirectory, 'dist/model-viewer.js');
-  const destFile = path.resolve(__dirname, '../lib/model-viewer.js');  
-  
+  const destFile = path.resolve(__dirname, '../lib/model-viewer.js');
+
   fs.copyFile(srcFile, destFile, (err) => {
     if (err) throw err;
   });
@@ -95,7 +95,7 @@ function copyModelViewer(){
   });
 
   page.on('console', msg => INFO("--- Console output: ", msg.text()));
-  
+
   let t3 = performance.now();
 
   process_status = 0;
