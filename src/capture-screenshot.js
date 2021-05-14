@@ -42,7 +42,7 @@ const htmlTemplate = (options) => {
 
 const captureScreenshot = async function (options) {
   const browserT0 = performance.now();
-  const {width, height, outputPath, debug} = options;
+  const {width, height, outputPath, debug, quality} = options;
 
   const browser = await puppeteer.launch({
     args: [
@@ -130,8 +130,18 @@ const captureScreenshot = async function (options) {
 
   const screenshotT0 = performance.now();
 
+  const type = 'jpeg';
+  if (type === 'image/png') {
+    type = 'png';
+  }
+
   const screenshot =
-      await page.screenshot({path: outputPath, omitBackground: true});
+      await page.screenshot({
+        quality: quality * 100.0,
+        type,
+        path: outputPath,
+        omitBackground: true
+      });
 
   const screenshotT1 = performance.now();
 
