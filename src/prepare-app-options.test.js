@@ -33,7 +33,7 @@ function getArgv(optionalAndOverrides = {}) {
 
 test('handles defaults', () => {
   const argv = getArgv();
-  
+
   expect(prepareAppOptions({libPort, modelPort, debug, argv})).toEqual(defaultPreparedOptions);
 });
 
@@ -45,7 +45,7 @@ test('handles args', () => {
     image_quality: 1,
     color: 'rgba(255, 0, 255, 0)',
   });
-  
+
   expect(prepareAppOptions({libPort, modelPort, debug, argv})).toEqual({
     ...defaultPreparedOptions,
     backgroundColor: 'rgba(255, 0, 255, 0)',
@@ -61,7 +61,7 @@ test('handles jpg format', () => {
     output: './some_image.jpg',
     image_format: 'image/jpeg',
   });
-  
+
   expect(prepareAppOptions({libPort, modelPort, debug, argv})).toEqual({
     ...defaultPreparedOptions,
     outputPath: './some_image.jpg',
@@ -76,7 +76,7 @@ test('handles jpg with color override', () => {
     image_format: 'image/jpeg',
     color: 'rgba(255, 0, 255, 1)',
   });
-  
+
   expect(prepareAppOptions({libPort, modelPort, debug, argv})).toEqual({
     ...defaultPreparedOptions,
     outputPath: './some_image.jpg',

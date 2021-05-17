@@ -91,4 +91,6 @@ lib/
 
 package-lock.json
 
-output.jpg
+output.jpeg
+test/screenshots
+.DS_Store
