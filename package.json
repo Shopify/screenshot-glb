@@ -1,6 +1,6 @@
 {
   "name": "@shopify/screenshot-glb",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "publishConfig": {
     "access": "public"
   },
@@ -16,7 +16,7 @@
   "author": "Stephan Leroux <stephan.leroux@shopify.com>",
   "license": "MIT",
   "dependencies": {
-    "@google/model-viewer": "^1.6.0",
+    "@google/model-viewer": "^1.7.1",
     "mime-types": "^2.1.30",
     "puppeteer": "^9.1.1",
     "yargs": "^17.0.1"
