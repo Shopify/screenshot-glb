@@ -299,10 +299,10 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
-"@google/model-viewer@^1.7.0":
-  version "1.7.0"
-  resolved "https://registry.yarnpkg.com/@google/model-viewer/-/model-viewer-1.7.0.tgz#4297b4e0ef1212e1c451233e378d0399329290fd"
-  integrity sha512-Ucchet2BgXfgfL/MjNjbZIyyXOf8iQN18PkhUHEhrdbLQmMpgUrpyh3hPWQPoIbPSlg0ygqUDtGv6mTUd48uJA==
+"@google/model-viewer@^1.7.1":
+  version "1.7.1"
+  resolved "https://registry.yarnpkg.com/@google/model-viewer/-/model-viewer-1.7.1.tgz#c89552a499a9b9c01ff4fa2b5b6b0454d9d50cb1"
+  integrity sha512-4G/Y2Ue26lteCS9if6C6jVwXcKX8UDP3DKAWbHAd2Ig3TQgmWVd7SiV0QnFwuWa1GivC4CCRoHPnSfBb/VehkA==
 
 "@istanbuljs/load-nyc-config@^1.0.0":
   version "1.1.0"
@@ -3836,9 +3836,9 @@ write-file-atomic@^3.0.0:
     typedarray-to-buffer "^3.1.5"
 
 ws@^7.2.3:
-  version "7.3.1"
-  resolved "https://registry.yarnpkg.com/ws/-/ws-7.3.1.tgz#d0547bf67f7ce4f12a72dfe31262c68d7dc551c8"
-  integrity sha512-D3RuNkynyHmEJIpD2qrgVkc9DQ23OrN/moAwZX4L8DfvszsJxpjQuUq3LMx6HoYji9fbIOBY18XWBsAux1ZZUA==
+  version "7.4.6"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-7.4.6.tgz#5654ca8ecdeee47c33a9a4bf6d28e2be2980377c"
+  integrity sha512-YmhHDO4MzaDLB+M9ym/mDA5z0naX8j7SIlT8f8z+I0VtzsRbekxEutHSme7NPS2qE8StCYQNUnfWdXta/Yu85A==
 
 xml-name-validator@^3.0.0:
   version "3.0.0"
