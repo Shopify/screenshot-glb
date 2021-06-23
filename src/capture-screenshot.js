@@ -42,7 +42,13 @@ const htmlTemplate = (options) => {
 
 const captureScreenshot = async function (options) {
   const browserT0 = performance.now();
-  const {width, height, outputPath, debug, quality} = options;
+  const {width, height, outputPath, debug, quality, timeout} = options;
+
+  let screenshotTimeoutInSec = maxTimeInSec;
+
+  if (timeout) {
+    screenshotTimeoutInSec = timeout / 1000;
+  }
 
   const browser = await puppeteer.launch({
     args: [
@@ -117,7 +123,7 @@ const captureScreenshot = async function (options) {
     } catch (error) {
       return error.message;
     }
-  }, maxTimeInSec);
+  }, screenshotTimeoutInSec);
 
   const renderT1 = performance.now();
   console.log(`🖌  Rendering screenshot of model (${timeDelta(renderT0, renderT1)}s)`);
