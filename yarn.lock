@@ -299,10 +299,10 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
-"@google/model-viewer@^1.7.0":
-  version "1.7.0"
-  resolved "https://registry.yarnpkg.com/@google/model-viewer/-/model-viewer-1.7.0.tgz#4297b4e0ef1212e1c451233e378d0399329290fd"
-  integrity sha512-Ucchet2BgXfgfL/MjNjbZIyyXOf8iQN18PkhUHEhrdbLQmMpgUrpyh3hPWQPoIbPSlg0ygqUDtGv6mTUd48uJA==
+"@google/model-viewer@^1.7.1":
+  version "1.7.2"
+  resolved "https://registry.yarnpkg.com/@google/model-viewer/-/model-viewer-1.7.2.tgz#f8a5a2215616dc51d4e6b70861a6de16b4599322"
+  integrity sha512-SoUTpYYlWPxIknfTM3gYQ240Q7eUqZuEHDH/YD2oMxuG7pWQB4DfW67O0EvgIh3vJ0rNG6eenXm0luqzK1i4Cw==
 
 "@istanbuljs/load-nyc-config@^1.0.0":
   version "1.1.0"
@@ -3851,9 +3851,9 @@ xmlchars@^2.2.0:
   integrity sha512-JZnDKK8B0RCDw84FNdDAIpZK+JuJw+s7Lz8nksI7SIuU3UXJJslUthsi+uWBUYOwPFwW7W7PRLRfUKpxjtjFCw==
 
 y18n@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/y18n/-/y18n-4.0.0.tgz#95ef94f85ecc81d007c264e190a120f0a3c8566b"
-  integrity sha512-r9S/ZyXu/Xu9q1tYlpsLIsa3EeLXXk0VwlxqTcFRfg9EhMW+17kbt9G0NrgCmhGb5vT2hyhJZLfDGx+7+5Uj/w==
+  version "4.0.3"
+  resolved "https://registry.yarnpkg.com/y18n/-/y18n-4.0.3.tgz#b5f259c82cd6e336921efd7bfd8bf560de9eeedf"
+  integrity sha512-JKhqTOwSrqNA1NY5lSztJ1GrBiUodLMmIZuLiDaMRJ+itFd+ABVE8XBjOvIWL+rSqNDC74LCSFmlb/U4UZ4hJQ==
 
 y18n@^5.0.5:
   version "5.0.8"
