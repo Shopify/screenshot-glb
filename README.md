@@ -27,6 +27,18 @@ Options:
 ## Dependencies
 
 The module relies on using [puppeteer](https://www.npmjs.com/package/puppeteer) to spawn a headless instance of Chrome to render Google's [<model-viewer>](https://github.com/GoogleWebComponents/model-viewer) web component with the GLB model loaded. 
+
+## Development
+
+For Shopify Employees
+- `dev up`
+- `yarn link`
+- `screenshot-glb -i <PATH_TO_MODEL> -o <PATH_TO_OUTPUT_IMAGE>`
+
+Outside Development
+- `yarn install`
+- `yarn link`
+- `screenshot-glb -i <PATH_TO_MODEL> -o <PATH_TO_OUTPUT_IMAGE>`
   
 ### Linux
 
