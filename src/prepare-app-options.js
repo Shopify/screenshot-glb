@@ -7,6 +7,7 @@ module.exports = function prepareBrowserOptions({libPort, modelPort, argv}) {
   const inputPath = `http://localhost:${modelPort}/${path.basename(argv.input)}`;
   const [outputPath, format] = scrubOutput(argv.output, argv.image_format);
   const defaultBackgroundColor = (format === 'image/jpeg' ? colors.white : colors.transparent);
+  const defaultSceneOrientation = '0deg 0deg 0deg';
 
   return {
     backgroundColor: argv.color || defaultBackgroundColor,
@@ -18,6 +19,7 @@ module.exports = function prepareBrowserOptions({libPort, modelPort, argv}) {
     inputPath,
     outputPath,
     format,
+    sceneOrientation: argv.orientation || defaultSceneOrientation,
     libPort,
   };
 }

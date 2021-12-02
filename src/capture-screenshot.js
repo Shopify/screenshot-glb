@@ -9,7 +9,7 @@ const timeDelta = (start, end) => {
 }
 
 const htmlTemplate = (options) => {
-  const {width, height, inputPath, libPort, backgroundColor} = options;
+  const {width, height, inputPath, libPort, sceneOrientation, backgroundColor} = options;
   return `
     <html>
       <head>
@@ -34,6 +34,7 @@ const htmlTemplate = (options) => {
           background-color=""
           id="snapshot-viewer"
           interaction-prompt="none"
+          orientation="${sceneOrientation}"
           src="${inputPath}" />
       </body>
     </html>
@@ -42,7 +43,7 @@ const htmlTemplate = (options) => {
 
 const captureScreenshot = async function (options) {
   const browserT0 = performance.now();
-  const {width, height, outputPath, debug, quality, timeout} = options;
+  const { width, height, outputPath, debug, quality, format, timeout } = options;
 
   let screenshotTimeoutInSec = maxTimeInSec;
 
@@ -136,14 +137,16 @@ const captureScreenshot = async function (options) {
 
   const screenshotT0 = performance.now();
 
-  const type = 'jpeg';
-  if (type === 'image/png') {
+  let type = 'jpeg';
+  let imageQuality = quality * 100.0;
+  if (format === 'image/png') {
     type = 'png';
+    imageQuality = undefined;
   }
-
+  
   const screenshot =
       await page.screenshot({
-        quality: quality * 100.0,
+        quality: imageQuality,
         type,
         path: outputPath,
         omitBackground: true
