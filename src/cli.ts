@@ -2,37 +2,83 @@
 
 import path from "path";
 import fs from "fs";
+import yargs from "yargs/yargs";
 
 import { FileServer } from "./file-server";
 import { prepareAppOptions } from "./prepare-app-options";
 import { captureScreenshot } from "./capture-screenshot";
+import {
+  DEFAULT_WIDTH,
+  DEFAULT_HEIGHT,
+  DEFAULT_FORMAT,
+  DEFAULT_QUALITY,
+  DEFAULT_TIMEOUT_MILLISECONDS,
+  DEFAULT_DEBUG,
+  DEFAULT_VERBOSE_LOGGING,
+} from "./defaults";
 
-const argv = require("yargs")
-  .alias("i", "input")
-  .alias("o", "output")
-  .alias("c", "color")
-  .alias("w", "width")
-  .alias("h", "height")
-  .alias("f", "image_format")
-  .alias("q", "image_quality")
-  .alias("t", "timeout")
-  .alias("d", "debug")
-  .count("verbose")
-  .alias("v", "verbose")
-  .describe("i", "Input glTF 2.0 binary (GLB) filepath")
-  .describe("o", "Output screenshot filepath")
-  .describe("w", "Output image width")
-  .describe("h", "Output image height")
-  .describe("f", "Output image format (defaults to 'image/png')")
-  .describe("q", "Quality of the output image (defaults to 0.92)")
-  .describe(
-    "c",
-    "Output image background color (defaults to transparent, accepts HEX or RGB)"
-  )
-  .describe("t", "Timeout length")
-  .describe("v", "Enable verbose logging")
-  .describe("d", "Enable Debug Mode")
-  .demandOption(["i", "o"]).argv;
+const argv = yargs(process.argv.slice(2)).options({
+  input: {
+    type: "string",
+    alias: "i",
+    describe: "Input glTF 2.0 binary (GLB) filepath",
+    demandOption: true,
+  },
+  output: {
+    type: "string",
+    alias: "o",
+    describe: "Output screenshot filepath",
+    demandOption: true,
+  },
+  color: {
+    type: "string",
+    alias: "c",
+    describe:
+      "Output image background color (defaults to transparent, accepts HEX or RGB)",
+  },
+  width: {
+    type: "number",
+    alias: "w",
+    describe: "Output image width",
+    default: DEFAULT_WIDTH,
+  },
+  height: {
+    type: "number",
+    alias: "h",
+    describe: "Output image height",
+    default: DEFAULT_HEIGHT,
+  },
+  image_format: {
+    type: "string",
+    alias: "f",
+    describe: "Output image format (defaults to 'image/png')",
+    default: DEFAULT_FORMAT,
+  },
+  image_quality: {
+    type: "number",
+    alias: "q",
+    describe: "Quality of the output image",
+    default: DEFAULT_QUALITY,
+  },
+  timeout: {
+    type: "number",
+    alias: "t",
+    describe: "Timeout length in milliseconds",
+    default: DEFAULT_TIMEOUT_MILLISECONDS,
+  },
+  debug: {
+    type: "boolean",
+    alias: "d",
+    describe: "Enable Debug Mode",
+    default: DEFAULT_DEBUG,
+  },
+  verbose: {
+    type: "boolean",
+    alias: "v",
+    describe: "Enable verbose logging",
+    default: DEFAULT_VERBOSE_LOGGING,
+  },
+}).argv;
 
 function copyModelViewer() {
   const dir = path.resolve(__dirname, "../lib");

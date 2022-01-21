@@ -1,6 +1,7 @@
 /**
  * @jest-environment jsdom
  */
+
 import { htmlTemplate } from "./html-template";
 
 describe("htmlTemplate", () => {
@@ -145,6 +146,90 @@ describe("htmlTemplate", () => {
 
       expect(modelViewer.getAttribute("style")).toEqual(
         `background-color: ${backgroundColor};`
+      );
+    });
+
+    it("should pass custom attributes", () => {
+      const modelViewerArgs = {
+        "environment-image": "https://some-url.hdr",
+        exposure: "3",
+      };
+
+      document.documentElement.innerHTML = htmlTemplate({
+        ...defaultOptions,
+        modelViewerArgs,
+      });
+
+      const modelViewer = document.querySelector("model-viewer");
+
+      Object.entries(modelViewerArgs).forEach(([attribute, value]) => {
+        expect(modelViewer.getAttribute(attribute)).toBe(value);
+      });
+    });
+
+    it("cannot overwrite src", () => {
+      const modelViewerArgs = {
+        src: "new-source.glb",
+      };
+
+      expect(() =>
+        htmlTemplate({
+          ...defaultOptions,
+          modelViewerArgs,
+        })
+      ).toThrow(
+        new Error("`src` cannot be ovewritten pass the source via -i instead")
+      );
+    });
+
+    it("cannot overwrite id", () => {
+      const modelViewerArgs = {
+        id: "an-id",
+      };
+
+      expect(() =>
+        htmlTemplate({
+          ...defaultOptions,
+          modelViewerArgs,
+        })
+      ).toThrow(
+        new Error(
+          "`id` cannot be passed since it would cause the renderer to break"
+        )
+      );
+    });
+
+    it("cannot overwrite interaction-prompt", () => {
+      const modelViewerArgs = {
+        "interaction-prompt": "when-focused",
+      };
+
+      expect(() =>
+        htmlTemplate({
+          ...defaultOptions,
+          modelViewerArgs,
+        })
+      ).toThrow(
+        new Error(
+          "`interaction-prompt` cannot be passed since it would cause unexpected renders"
+        )
+      );
+    });
+
+    it("cannot overwrite style", () => {
+      const modelViewerArgs = {
+        style: "color: #FF00FF",
+      };
+
+      expect(() =>
+        htmlTemplate({
+          ...defaultOptions,
+          modelViewerArgs,
+        })
+      ).toThrow(
+        new Error(
+          "`style` cannot be passed since it would cause unexpected renders"
+        )
       );
     });
   });
