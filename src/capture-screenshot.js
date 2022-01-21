@@ -9,7 +9,8 @@ const timeDelta = (start, end) => {
 }
 
 const htmlTemplate = (options) => {
-  const {width, height, inputPath, libPort, backgroundColor} = options;
+  const {width, height, inputPath, libPort, backgroundColor, cameraOrbit} = options;
+  
   return `
     <html>
       <head>
@@ -34,6 +35,7 @@ const htmlTemplate = (options) => {
           background-color=""
           id="snapshot-viewer"
           interaction-prompt="none"
+          camera-orbit="${cameraOrbit}"
           src="${inputPath}" />
       </body>
     </html>

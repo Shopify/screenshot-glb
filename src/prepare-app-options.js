@@ -10,6 +10,7 @@ module.exports = function prepareBrowserOptions({libPort, modelPort, argv}) {
 
   return {
     backgroundColor: argv.color || defaultBackgroundColor,
+    cameraOrbit: argv.camera_orbit || '',
     quality: argv.image_quality || 0.92,
     timeout: argv.timeout || 10000,
     height: argv.height || 1024,

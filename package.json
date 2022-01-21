@@ -11,7 +11,7 @@
   "scripts": {
     "lint": "echo \"linting not implemented\"",
     "test": "jest",
-    "dev": "node src/cli.js -i ./test/fixtures/WaterBottle.glb -o output.jpg -f image/jpeg -q 1.00 -v -t 30000"
+    "dev": "node src/cli.js -i ./test/fixtures/WaterBottle.glb -o output.jpg -f image/jpeg -q 1.00 -v -t 30000 --camera_orbit \"45deg 55deg\""
   },
   "author": "Stephan Leroux <stephan.leroux@shopify.com>",
   "license": "MIT",
