@@ -1,0 +1,7 @@
+src
+test
+.dev
+.shadowenv.d
+.gitignore
+railgun.yml
+tsconfig.json

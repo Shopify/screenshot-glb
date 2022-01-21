@@ -6,12 +6,14 @@
   },
   "description": "A command line utility for taking screenshots of a glTF 2.0 binary file using Google's <model-viewer> component.",
   "bin": {
-    "screenshot-glb": "./src/cli.js"
+    "screenshot-glb": "./dist/cli.js"
   },
   "scripts": {
+    "prepare": "yarn build",
+    "build": "tsc",
     "lint": "echo \"linting not implemented\"",
     "test": "jest",
-    "dev": "node src/cli.js -i ./test/fixtures/WaterBottle.glb -o output.jpg -f image/jpeg -q 1.00 -v -t 30000"
+    "dev": "yarn build && node dist/cli.js -i ./test/fixtures/WaterBottle.glb -o output.jpg -f image/jpeg -q 1.00 -v -t 30000"
   },
   "author": "Stephan Leroux <stephan.leroux@shopify.com>",
   "license": "MIT",
@@ -22,6 +24,9 @@
     "yargs": "^17.2.1"
   },
   "devDependencies": {
-    "jest": "^27.3.1"
+    "@types/jest": "^27.4.0",
+    "jest": "^27.4.7",
+    "ts-jest": "^27.1.3",
+    "typescript": "^4.5.5"
   }
 }

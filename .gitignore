@@ -88,9 +88,10 @@ typings/
 .dynamodb/
 
 lib/
+dist/
 
 package-lock.json
 
-output.jpeg
+output.jpg
 test/screenshots
 .DS_Store
