@@ -69,7 +69,7 @@ function copyModelViewer() {
 
   let processStatus = 0;
   try {
-    await captureScreenshot(options);
+    await captureScreenshot({ ...options, devicePixelRatio: 1.0 });
   } catch (err) {
     console.log(`❌ ERROR: ${err}`);
     processStatus = 1;
