@@ -7,11 +7,11 @@ interface Argv {
   input: string;
   output: string;
   image_format: string;
+  image_quality: number;
+  timeout: number;
+  width: number;
+  height: number;
   color?: string;
-  image_quality?: number;
-  timeout?: number;
-  width?: number;
-  height?: number;
 }
 
 interface Props {
@@ -22,20 +22,28 @@ interface Props {
 }
 
 export function prepareAppOptions({ libPort, modelPort, debug, argv }: Props) {
-  const inputPath = `http://localhost:${modelPort}/${path.basename(
-    argv.input
-  )}`;
-  const [outputPath, format] = scrubOutput(argv.output, argv.image_format);
+  const {
+    input,
+    output,
+    image_format,
+    image_quality: quality,
+    timeout,
+    height,
+    width,
+    color: backgroundColor,
+  } = argv;
+  const inputPath = `http://localhost:${modelPort}/${path.basename(input)}`;
+  const [outputPath, format] = scrubOutput(output, image_format);
   const defaultBackgroundColor =
     format === "image/jpeg" ? colors.white : colors.transparent;
 
   return {
-    backgroundColor: argv.color || defaultBackgroundColor,
-    quality: argv.image_quality || 0.92,
-    timeout: argv.timeout || 10000,
-    height: argv.height || 1024,
-    width: argv.width || 1024,
-    debug: debug || false,
+    backgroundColor: backgroundColor || defaultBackgroundColor,
+    quality,
+    timeout,
+    height,
+    width,
+    debug,
     inputPath,
     outputPath,
     format,

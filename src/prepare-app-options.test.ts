@@ -22,6 +22,10 @@ function getArgv(optionalAndOverrides = {}) {
     input: "./some_model.glb",
     output: "./some_image.png",
     image_format: "image/png",
+    width: 1024,
+    height: 1024,
+    image_quality: 0.92,
+    timeout: 10000,
   };
 
   return {
@@ -29,14 +33,6 @@ function getArgv(optionalAndOverrides = {}) {
     ...optionalAndOverrides,
   };
 }
-
-test("handles defaults", () => {
-  const argv = getArgv();
-
-  expect(prepareAppOptions({ libPort, modelPort, debug, argv })).toEqual(
-    defaultPreparedOptions
-  );
-});
 
 test("handles args", () => {
   const argv = getArgv({

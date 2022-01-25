@@ -2,9 +2,6 @@ import puppeteer from "puppeteer";
 import { performance } from "perf_hooks";
 import { htmlTemplate, TemplateRenderOptions } from "./html-template";
 
-const devicePixelRatio = 1.0;
-const maxTimeInSec = 30;
-
 const timeDelta = (start, end) => {
   return ((end - start) / 1000).toPrecision(3);
 };
@@ -18,13 +15,16 @@ interface CaptureScreenShotOptions extends TemplateRenderOptions {
 
 export async function captureScreenshot(options: CaptureScreenShotOptions) {
   const browserT0 = performance.now();
-  const { width, height, outputPath, debug, quality, timeout } = options;
-
-  let screenshotTimeoutInSec = maxTimeInSec;
-
-  if (timeout) {
-    screenshotTimeoutInSec = timeout / 1000;
-  }
+  const {
+    width,
+    height,
+    outputPath,
+    debug,
+    quality,
+    timeout,
+    devicePixelRatio,
+  } = options;
+  const screenshotTimeoutInSec = timeout / 1000;
 
   const browser = await puppeteer.launch({
     args: ["--no-sandbox"],

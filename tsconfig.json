@@ -6,7 +6,8 @@
     "moduleResolution": "node",
     "sourceMap": true,
     "outDir": "dist",
-    "noEmitHelpers": false
+    "noEmitHelpers": false,
+    "removeComments": false
   },
   "exclude": ["node_modules"],
   "lib": ["es2015"]

@@ -1,3 +1,5 @@
+type AttributesObject = { [key: string]: any };
+
 export interface TemplateRenderOptions {
   width: number;
   height: number;
@@ -5,6 +7,44 @@ export interface TemplateRenderOptions {
   libPort: number;
   backgroundColor: string;
   devicePixelRatio: number;
+  modelViewerArgs?: AttributesObject;
+}
+
+function toHTMLAttributeString(args: AttributesObject | undefined) {
+  if (!args) return "";
+
+  return Object.entries(args)
+    .map(([key, value]) => {
+      return `${key}="${value}"`;
+    })
+    .join("\n");
+}
+
+const errorMessagesForAttributeKey = {
+  src: "`src` cannot be ovewritten pass the source via -i instead",
+  "interaction-prompt":
+    "`interaction-prompt` cannot be passed since it would cause unexpected renders",
+  style: "`style` cannot be passed since it would cause unexpected renders",
+  id: "`id` cannot be passed since it would cause the renderer to break",
+};
+
+function validateCustomAttributes(
+  defaultAttributes: AttributesObject,
+  customAttributes: AttributesObject | undefined
+) {
+  if (!customAttributes) {
+    return;
+  }
+
+  Object.keys(defaultAttributes).forEach((defaultAttributeKey) => {
+    if (customAttributes[defaultAttributeKey] !== undefined) {
+      if (errorMessagesForAttributeKey[defaultAttributeKey]) {
+        throw new Error(errorMessagesForAttributeKey[defaultAttributeKey]);
+      }
+
+      throw new Error(`You cannot pass \`${defaultAttributeKey}\``);
+    }
+  });
 }
 
 export function htmlTemplate({
@@ -14,7 +54,20 @@ export function htmlTemplate({
   libPort,
   backgroundColor,
   devicePixelRatio,
+  modelViewerArgs,
 }: TemplateRenderOptions): string {
+  const defaultAttributes = {
+    id: "snapshot-viewer",
+    style: `background-color: ${backgroundColor};`,
+    "interaction-prompt": "none",
+    src: inputPath,
+  };
+
+  validateCustomAttributes(defaultAttributes, modelViewerArgs);
+
+  const defaultAttributesString = toHTMLAttributeString(defaultAttributes);
+  const modelViewerArgsString = toHTMLAttributeString(modelViewerArgs);
+
   return `
     <!DOCTYPE html>
     <html>
@@ -36,10 +89,8 @@ export function htmlTemplate({
       </head>
       <body>
         <model-viewer
-          style="background-color: ${backgroundColor};"
-          id="snapshot-viewer"
-          interaction-prompt="none"
-          src="${inputPath}"
+          ${defaultAttributesString}
+          ${modelViewerArgsString}
         />
       </body>
     </html>
