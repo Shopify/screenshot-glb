@@ -12,6 +12,7 @@ interface Argv {
   width: number;
   height: number;
   color?: string;
+  model_viewer_attributes?: string;
 }
 
 interface Props {
@@ -31,11 +32,22 @@ export function prepareAppOptions({ libPort, modelPort, debug, argv }: Props) {
     height,
     width,
     color: backgroundColor,
+    model_viewer_attributes,
   } = argv;
   const inputPath = `http://localhost:${modelPort}/${path.basename(input)}`;
   const [outputPath, format] = scrubOutput(output, image_format);
   const defaultBackgroundColor =
     format === "image/jpeg" ? colors.white : colors.transparent;
+  let modelViewerArgs: { [key: string]: string } = undefined;
+
+  if (model_viewer_attributes) {
+    modelViewerArgs = {};
+
+    const params = new URLSearchParams(model_viewer_attributes);
+    params.forEach((value, key) => {
+      modelViewerArgs[key] = value;
+    });
+  }
 
   return {
     backgroundColor: backgroundColor || defaultBackgroundColor,
@@ -48,5 +60,6 @@ export function prepareAppOptions({ libPort, modelPort, debug, argv }: Props) {
     outputPath,
     format,
     libPort,
+    modelViewerArgs,
   };
 }
