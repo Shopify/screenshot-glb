@@ -1,5 +1,6 @@
 import puppeteer from "puppeteer";
 import { performance } from "perf_hooks";
+import { htmlTemplate, TemplateRenderOptions } from "./html-template";
 
 const devicePixelRatio = 1.0;
 const maxTimeInSec = 30;
@@ -8,39 +9,14 @@ const timeDelta = (start, end) => {
   return ((end - start) / 1000).toPrecision(3);
 };
 
-const htmlTemplate = (options) => {
-  const { width, height, inputPath, libPort, backgroundColor } = options;
-  return `
-    <html>
-      <head>
-        <meta name="viewport" content="width=device-width, initial-scale="${devicePixelRatio}">
-        <script type="module"
-          src="http://localhost:${libPort}/model-viewer.js">
-        </script>
-        <style>
-          body {
-            margin: 0;
-          }
-          model-viewer {
-            --progress-bar-color: transparent;
-            width: ${width};
-            height: ${height};
-          }
-        </style>
-      </head>
-      <body>
-        <model-viewer
-          style="background-color: ${backgroundColor};"
-          background-color=""
-          id="snapshot-viewer"
-          interaction-prompt="none"
-          src="${inputPath}" />
-      </body>
-    </html>
-  `;
-};
+interface CaptureScreenShotOptions extends TemplateRenderOptions {
+  outputPath: string;
+  debug: boolean;
+  quality: number;
+  timeout: number;
+}
 
-export async function captureScreenshot(options) {
+export async function captureScreenshot(options: CaptureScreenShotOptions) {
   const browserT0 = performance.now();
   const { width, height, outputPath, debug, quality, timeout } = options;
 
