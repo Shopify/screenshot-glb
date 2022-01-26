@@ -1,6 +1,6 @@
 {
   "name": "@shopify/screenshot-glb",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "publishConfig": {
     "access": "public"
   },
@@ -13,7 +13,7 @@
     "build": "tsc",
     "lint": "echo \"linting not implemented\"",
     "test": "jest",
-    "dev": "yarn build && node dist/cli.js -i ./test/fixtures/WaterBottle.glb -o output.jpg -w 1024 -h 2048 -f image/jpeg -q 1.00 -v -t 30000 -m \"exposure=0.92&camera-orbit=88.59deg 59.01deg 0.24m&camera-target=0.06m 0.04m 0m&environment-image=neutral\""
+    "dev": "yarn build && node dist/cli.js -i ./test/fixtures/WaterBottle.glb -o output.jpg -w 1024 -h 2048 -q 1.00 -v -t 30000 -m \"exposure=0.92&camera-orbit=88.59deg 59.01deg 0.24m&camera-target=0.06m 0.04m 0m&environment-image=neutral\""
   },
   "author": "Stephan Leroux <stephan.leroux@shopify.com>",
   "license": "MIT",
