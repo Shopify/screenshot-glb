@@ -1,6 +1,6 @@
 import path from "path";
 
-import { scrubOutput } from "./scrub-output";
+import { parseOutputPathAndFormat } from "./parse-output-path-and-format";
 import { colors } from "./colors";
 
 interface Argv {
@@ -35,7 +35,7 @@ export function prepareAppOptions({ libPort, modelPort, debug, argv }: Props) {
     model_viewer_attributes,
   } = argv;
   const inputPath = `http://localhost:${modelPort}/${path.basename(input)}`;
-  const [outputPath, format] = scrubOutput(output, image_format);
+  const [outputPath, format] = parseOutputPathAndFormat(output, image_format);
   const defaultBackgroundColor =
     format === "image/jpeg" ? colors.white : colors.transparent;
   let modelViewerArgs: { [key: string]: string } = undefined;
