@@ -81,3 +81,16 @@ test("handles jpg with color override", () => {
     backgroundColor: "rgba(255, 0, 255, 1)",
   });
 });
+
+test("handles model viewer attributes", () => {
+  const argv = getArgv({
+    model_viewer_attributes: "exposure=10&camera-orbit=45deg 55deg 2.5m",
+  });
+  expect(prepareAppOptions({ libPort, modelPort, debug, argv })).toEqual({
+    ...defaultPreparedOptions,
+    modelViewerArgs: {
+      "camera-orbit": "45deg 55deg 2.5m",
+      exposure: "10",
+    },
+  });
+});

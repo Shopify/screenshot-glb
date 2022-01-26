@@ -78,6 +78,12 @@ const argv = yargs(process.argv.slice(2)).options({
     describe: "Enable verbose logging",
     default: DEFAULT_VERBOSE_LOGGING,
   },
+  model_viewer_attributes: {
+    type: "string",
+    alias: "m",
+    describe:
+      "Set <model-viewer> attributes by passing them as url params eg. exposure=2&environment-image=neutral",
+  },
 }).argv;
 
 function copyModelViewer() {
