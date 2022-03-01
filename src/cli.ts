@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 import path from "path";
-import fs from "fs";
 import yargs from "yargs/yargs";
 
 import { FileServer } from "./file-server";
@@ -78,6 +77,11 @@ const argv = yargs(process.argv.slice(2)).options({
     describe: "Enable verbose logging",
     default: DEFAULT_VERBOSE_LOGGING,
   },
+  model_viewer_version: {
+    type: "string",
+    alias: "@",
+    describe: "Model viewer version to be used. If nothing is passed defaults to latest"
+  },
   model_viewer_attributes: {
     type: "string",
     alias: "m",
@@ -86,35 +90,12 @@ const argv = yargs(process.argv.slice(2)).options({
   },
 }).argv;
 
-function copyModelViewer() {
-  const dir = path.resolve(__dirname, "../lib");
-
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir);
-  }
-
-  const modelViewerDirectory = path.dirname(
-    path.dirname(require.resolve("@google/model-viewer"))
-  );
-  const srcFile = path.resolve(modelViewerDirectory, "dist/model-viewer.js");
-  const destFile = path.resolve(__dirname, "../lib/model-viewer.js");
-
-  fs.copyFile(srcFile, destFile, (err) => {
-    if (err) throw err;
-  });
-}
-
 (async () => {
-  copyModelViewer();
-
-  const libServer = new FileServer(path.resolve(__dirname, "../lib"));
   const modelServer = new FileServer(path.dirname(argv.input));
 
-  await libServer.start();
   await modelServer.start();
 
   const options = prepareAppOptions({
-    libPort: libServer.port,
     modelPort: modelServer.port,
     argv,
   });
@@ -127,7 +108,6 @@ function copyModelViewer() {
     processStatus = 1;
   }
 
-  await libServer.stop();
   await modelServer.stop();
 
   process.exit(processStatus);

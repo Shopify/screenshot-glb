@@ -1,6 +1,5 @@
 import { prepareAppOptions } from "./prepare-app-options";
 
-const libPort = 8080;
 const modelPort = 8081;
 const debug = false;
 
@@ -11,7 +10,6 @@ const defaultPreparedOptions = {
   width: 1024,
   height: 1024,
   inputPath: "http://localhost:8081/some_model.glb",
-  libPort: 8080,
   outputPath: "./some_image.png",
   quality: 0.92,
   timeout: 10000,
@@ -43,7 +41,7 @@ test("handles args", () => {
     color: "rgba(255, 0, 255, 0)",
   });
 
-  expect(prepareAppOptions({ libPort, modelPort, debug, argv })).toEqual({
+  expect(prepareAppOptions({ modelPort, debug, argv })).toEqual({
     ...defaultPreparedOptions,
     backgroundColor: "rgba(255, 0, 255, 0)",
     width: 2048,
@@ -59,7 +57,7 @@ test("handles jpg format", () => {
     image_format: "image/jpeg",
   });
 
-  expect(prepareAppOptions({ libPort, modelPort, debug, argv })).toEqual({
+  expect(prepareAppOptions({ modelPort, debug, argv })).toEqual({
     ...defaultPreparedOptions,
     outputPath: "./some_image.jpg",
     format: "image/jpeg",
@@ -74,7 +72,7 @@ test("handles jpg with color override", () => {
     color: "rgba(255, 0, 255, 1)",
   });
 
-  expect(prepareAppOptions({ libPort, modelPort, debug, argv })).toEqual({
+  expect(prepareAppOptions({ modelPort, debug, argv })).toEqual({
     ...defaultPreparedOptions,
     outputPath: "./some_image.jpg",
     format: "image/jpeg",
@@ -86,7 +84,7 @@ test("handles model viewer attributes", () => {
   const argv = getArgv({
     model_viewer_attributes: "exposure=10&camera-orbit=45deg 55deg 2.5m",
   });
-  expect(prepareAppOptions({ libPort, modelPort, debug, argv })).toEqual({
+  expect(prepareAppOptions({ modelPort, debug, argv })).toEqual({
     ...defaultPreparedOptions,
     modelViewerArgs: {
       "camera-orbit": "45deg 55deg 2.5m",

@@ -1,10 +1,12 @@
+import {getModelViewerUrl} from "./get-model-viewer-url";
+
 type AttributesObject = { [key: string]: any };
 
 export interface TemplateRenderOptions {
+  modelViewerUrl: string;
   width: number;
   height: number;
   inputPath: string;
-  libPort: number;
   backgroundColor: string;
   devicePixelRatio: number;
   modelViewerArgs?: AttributesObject;
@@ -48,10 +50,10 @@ function validateCustomAttributes(
 }
 
 export function htmlTemplate({
+  modelViewerUrl,
   width,
   height,
   inputPath,
-  libPort,
   backgroundColor,
   devicePixelRatio,
   modelViewerArgs,
@@ -74,7 +76,7 @@ export function htmlTemplate({
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=${devicePixelRatio}">
         <script type="module"
-          src="http://localhost:${libPort}/model-viewer.js">
+          src="${modelViewerUrl}">
         </script>
         <style>
           body {

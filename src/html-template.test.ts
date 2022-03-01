@@ -6,11 +6,11 @@ import { htmlTemplate } from "./html-template";
 
 describe("htmlTemplate", () => {
   const defaultOptions = {
+    modelViewerUrl: 'https://cdn.shopify.com/shopifycloud/model-viewer/model-viewer.js',
     width: 3051,
     height: 768,
     inputPath: "http://localhost:8081/some_model.glb",
     backgroundColor: "#CAFE00",
-    libPort: 8080,
     devicePixelRatio: 1.0,
   };
 
@@ -75,8 +75,6 @@ describe("htmlTemplate", () => {
 
   describe("script", () => {
     it("should render", () => {
-      const { libPort } = defaultOptions;
-
       document.documentElement.innerHTML = htmlTemplate(defaultOptions);
 
       const scriptTags = document.querySelectorAll("script");
@@ -84,21 +82,19 @@ describe("htmlTemplate", () => {
       expect(scriptTags).toHaveLength(1);
       expect(scriptTags[0].getAttribute("type")).toBe("module");
       expect(scriptTags[0].getAttribute("src")).toBe(
-        `http://localhost:${libPort}/model-viewer.js`
+        'https://cdn.shopify.com/shopifycloud/model-viewer/model-viewer.js'
       );
     });
 
     it("should handle port", () => {
-      const libPort = 8008;
       document.documentElement.innerHTML = htmlTemplate({
         ...defaultOptions,
-        libPort,
       });
 
       const script = document.querySelector("script");
 
       expect(script.getAttribute("src")).toBe(
-        `http://localhost:${libPort}/model-viewer.js`
+        'https://cdn.shopify.com/shopifycloud/model-viewer/model-viewer.js'
       );
     });
   });
