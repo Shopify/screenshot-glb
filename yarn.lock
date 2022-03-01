@@ -481,9 +481,9 @@
   resolved "https://registry.npmjs.org/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@google/model-viewer@^1.9.1":
+"@google/model-viewer@^1.10.1":
   version "1.10.1"
-  resolved "https://registry.npmjs.org/@google/model-viewer/-/model-viewer-1.10.1.tgz"
+  resolved "https://registry.yarnpkg.com/@google/model-viewer/-/model-viewer-1.10.1.tgz#521d6112685f629514a7fbd1be1dcc476f58c9b1"
   integrity sha512-mQ7FhALWLj1rc4P7NXUNVG4glfgIeKK18X5UlQ0C+InkTsaLvfdTkOz5ixTwDWaw3ba8j6DMyGcN0mzMqc/OyA==
 
 "@istanbuljs/load-nyc-config@^1.0.0":
