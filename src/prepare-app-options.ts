@@ -12,17 +12,17 @@ interface Argv {
   width: number;
   height: number;
   color?: string;
+  model_viewer_version?: string;
   model_viewer_attributes?: string;
 }
 
 interface Props {
-  libPort: number;
   modelPort: number;
   argv: Argv;
   debug?: boolean;
 }
 
-export function prepareAppOptions({ libPort, modelPort, debug, argv }: Props) {
+export function prepareAppOptions({ modelPort, debug, argv }: Props) {
   const {
     input,
     output,
@@ -33,6 +33,7 @@ export function prepareAppOptions({ libPort, modelPort, debug, argv }: Props) {
     width,
     color: backgroundColor,
     model_viewer_attributes,
+    model_viewer_version: modelViewerVersion,
   } = argv;
   const inputPath = `http://localhost:${modelPort}/${path.basename(input)}`;
   const [outputPath, format] = parseOutputPathAndFormat(output, image_format);
@@ -59,7 +60,7 @@ export function prepareAppOptions({ libPort, modelPort, debug, argv }: Props) {
     inputPath,
     outputPath,
     format,
-    libPort,
     modelViewerArgs,
+    modelViewerVersion,
   };
 }

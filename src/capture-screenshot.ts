@@ -1,12 +1,15 @@
 import puppeteer from "puppeteer";
 import { performance } from "perf_hooks";
 import { htmlTemplate, TemplateRenderOptions } from "./html-template";
+import {getModelViewerUrl} from "./get-model-viewer-url";
+import {checkFileExistsAtUrl} from "./check-file-exists-at-url";
 
 const timeDelta = (start, end) => {
   return ((end - start) / 1000).toPrecision(3);
 };
 
-interface CaptureScreenShotOptions extends TemplateRenderOptions {
+interface CaptureScreenShotOptions extends Omit<TemplateRenderOptions, 'modelViewerUrl'> {
+  modelViewerVersion: string;
   outputPath: string;
   debug: boolean;
   quality: number;
@@ -16,6 +19,7 @@ interface CaptureScreenShotOptions extends TemplateRenderOptions {
 export async function captureScreenshot(options: CaptureScreenShotOptions) {
   const browserT0 = performance.now();
   const {
+    modelViewerVersion,
     width,
     height,
     outputPath,
@@ -58,7 +62,16 @@ export async function captureScreenshot(options: CaptureScreenShotOptions) {
 
   const contentT0 = performance.now();
 
-  const data = htmlTemplate(options);
+  const modelViewerUrl = getModelViewerUrl(modelViewerVersion);
+  const modelViewerUrlExists = await checkFileExistsAtUrl(modelViewerUrl);
+
+  if (!modelViewerUrlExists) {
+    throw new Error(
+      `Unfortunately Model Viewer ${modelViewerVersion} cannot be used to render a screenshot`
+    );
+  }
+
+  const data = htmlTemplate({...options, modelViewerUrl});
   await page.setContent(data, { waitUntil: "domcontentloaded" });
 
   const contentT1 = performance.now();
