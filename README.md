@@ -23,6 +23,8 @@ Options:
   -w, --width    Output image width
   -h, --height   Output image height
   -c, --color    Change the background color of the rendered image
+  -@, --model_viewer_version
+                 Pass the version of Model Viewer which should be used .eg 1.9
   -m, --model_viewer_attributes
                  Pass <model-viewer> attributes as a URL search param string
   -q, --image_quality
@@ -59,6 +61,9 @@ $ screenshot-glb -i <PATH_TO_MODEL> -o <PATH_TO_OUTPUT_IMAGE> --width 600 --heig
 
 // Change the exposure and environment-image
 $ screenshot-glb -i <PATH_TO_MODEL> -o <PATH_TO_OUTPUT_IMAGE> -m "environment-image=neutral&exposure=0.92"
+
+// Use a specific version of Model Viewer to create the screenshot
+$ screenshot-glb -i <PATH_TO_MODEL> -o <PATH_TO_OUTPUT_IMAGE> -@ 1.9
 ```
 
 ### Linux
