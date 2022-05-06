@@ -20,7 +20,7 @@
   "license": "MIT",
   "dependencies": {
     "mime-types": "^2.1.34",
-    "puppeteer": "^11.0.0",
+    "puppeteer": "^13.7.0",
     "yargs": "^17.2.1"
   },
   "devDependencies": {
