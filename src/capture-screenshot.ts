@@ -30,14 +30,30 @@ export async function captureScreenshot(options: CaptureScreenShotOptions) {
   } = options;
   const screenshotTimeoutInSec = timeout / 1000;
 
+  const headless = !debug;
+  const args = [
+    '--no-sandbox',
+    '--disable-gpu',
+    '--disable-dev-shm-usage',
+    '--disable-setuid-sandbox',
+    '--single-process',
+    '--no-zygote',
+  ];
+
+  if (headless) {
+    args.push('--single-process');
+  } else {
+    args.push('--start-maximized');
+  }
+
   const browser = await puppeteer.launch({
-    args: ["--no-sandbox"],
+    args,
     defaultViewport: {
       width,
       height,
       deviceScaleFactor: devicePixelRatio,
     },
-    headless: !debug,
+    headless,
   });
 
   const page = await browser.newPage();
@@ -72,7 +88,7 @@ export async function captureScreenshot(options: CaptureScreenShotOptions) {
   }
 
   const data = htmlTemplate({...options, modelViewerUrl});
-  await page.setContent(data, { waitUntil: "domcontentloaded" });
+  await page.setContent(data, { waitUntil: ["domcontentloaded"] });
 
   const contentT1 = performance.now();
 
