@@ -2,8 +2,10 @@ import puppeteer, {Browser, Page} from 'puppeteer';
 import {captureScreenshot} from './capture-screenshot';
 import { htmlTemplate } from "./html-template";
 import { performance } from "perf_hooks";
+import { checkFileExistsAtUrl } from "./check-file-exists-at-url";
 
 jest.mock("./html-template");
+jest.mock("./check-file-exists-at-url");
 jest.mock("perf_hooks", () => {
   return {
     performance: {
@@ -68,6 +70,7 @@ describe('captureScreenshot', () => {
 
     (htmlTemplate as jest.Mock).mockReturnValue(htmlContent);
     (performance.now as jest.Mock).mockReturnValue(0);
+    (checkFileExistsAtUrl as jest.Mock).mockResolvedValue(true);
   });
 
   afterEach(() => {
@@ -203,5 +206,17 @@ describe('captureScreenshot', () => {
     errorCallback(error);
 
     expect(console.log).toHaveBeenCalledWith(`🚨  Page Error: ${error}`);
+  });
+
+  test('handles no url for model viewer', async () => {
+    (checkFileExistsAtUrl as jest.Mock).mockResolvedValue(false);
+
+    await captureScreenshot({
+      ...defaultParams
+    });
+
+    expect(console.log).toHaveBeenLastCalledWith(
+      '❌  Model Viewer error: Error: Unfortunately Model Viewer undefined cannot be used to render a screenshot'
+    );
   });
 });

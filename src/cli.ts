@@ -104,6 +104,7 @@ const argv = yargs(process.argv.slice(2)).options({
   try {
     await captureScreenshot({ ...options, devicePixelRatio: 1.0 });
   } catch (err) {
+    console.log(`❌ Unhandled: ${err}`);
     processStatus = 1;
   }
 

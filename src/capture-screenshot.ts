@@ -16,6 +16,10 @@ interface CaptureScreenShotOptions extends Omit<TemplateRenderOptions, 'modelVie
   timeout: number;
 }
 
+function logError(message: string) {
+  console.log(`❌  ${message}`);
+}
+
 export async function captureScreenshot(options: CaptureScreenShotOptions) {
   const browserT0 = performance.now();
   const {
@@ -81,9 +85,10 @@ export async function captureScreenshot(options: CaptureScreenShotOptions) {
   const modelViewerUrlExists = await checkFileExistsAtUrl(modelViewerUrl);
 
   if (!modelViewerUrlExists) {
-    throw new Error(
+    logError(`Model Viewer error: ${new Error(
       `Unfortunately Model Viewer ${modelViewerVersion} cannot be used to render a screenshot`
-    );
+    )}`);
+    return;
   }
 
   const data = htmlTemplate({...options, modelViewerUrl});
@@ -144,7 +149,7 @@ export async function captureScreenshot(options: CaptureScreenShotOptions) {
   );
 
   if (evaluateError) {
-    console.log(`❌  Evaluate error: ${evaluateError}`);
+    logError(`Evaluate error: ${evaluateError}`);
     await browser.close();
     return;
   }
