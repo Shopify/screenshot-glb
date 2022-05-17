@@ -97,7 +97,8 @@ describe('captureScreenshot', () => {
         height,
         deviceScaleFactor: devicePixelRatio,
       },
-      headless: !debug
+      headless: !debug,
+      dumpio: true,
     });
   });
 
@@ -122,6 +123,7 @@ describe('captureScreenshot', () => {
         deviceScaleFactor: devicePixelRatio,
       },
       headless: false,
+      dumpio: true,
     });
   });
 
