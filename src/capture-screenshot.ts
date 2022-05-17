@@ -1,15 +1,15 @@
 import puppeteer from "puppeteer";
 import { performance } from "perf_hooks";
 import { htmlTemplate, TemplateRenderOptions } from "./html-template";
-import {getModelViewerUrl} from "./get-model-viewer-url";
-import {checkFileExistsAtUrl} from "./check-file-exists-at-url";
+import { getModelViewerUrl } from "./get-model-viewer-url";
+import { checkFileExistsAtUrl } from "./check-file-exists-at-url";
 
 const timeDelta = (start, end) => {
   return ((end - start) / 1000).toPrecision(3);
 };
 
 interface CaptureScreenShotOptions extends Omit<TemplateRenderOptions, 'modelViewerUrl'> {
-  modelViewerVersion: string;
+  modelViewerVersion?: string;
   outputPath: string;
   debug: boolean;
   quality: number;
@@ -36,7 +36,6 @@ export async function captureScreenshot(options: CaptureScreenShotOptions) {
     '--disable-gpu',
     '--disable-dev-shm-usage',
     '--disable-setuid-sandbox',
-    '--single-process',
     '--no-zygote',
   ];
 
@@ -59,7 +58,7 @@ export async function captureScreenshot(options: CaptureScreenShotOptions) {
   const page = await browser.newPage();
 
   page.on("error", (error) => {
-    console.log(`🚨 ${error}`);
+    console.log(`🚨  Page Error: ${error}`);
   });
 
   page.on("console", async (message) => {
@@ -74,7 +73,7 @@ export async function captureScreenshot(options: CaptureScreenShotOptions) {
 
   const browserT1 = performance.now();
 
-  console.log(`🚀 Launched browser (${timeDelta(browserT0, browserT1)}s)`);
+  console.log(`🚀  Launched browser (${timeDelta(browserT0, browserT1)}s)`);
 
   const contentT0 = performance.now();
 
@@ -88,7 +87,7 @@ export async function captureScreenshot(options: CaptureScreenShotOptions) {
   }
 
   const data = htmlTemplate({...options, modelViewerUrl});
-  await page.setContent(data, { waitUntil: ["domcontentloaded"] });
+  await page.setContent(data, { waitUntil: ['domcontentloaded', 'networkidle0'] });
 
   const contentT1 = performance.now();
 
@@ -145,9 +144,9 @@ export async function captureScreenshot(options: CaptureScreenShotOptions) {
   );
 
   if (evaluateError) {
-    console.log(evaluateError);
+    console.log(`❌  Evaluate error: ${evaluateError}`);
     await browser.close();
-    throw new Error(evaluateError);
+    return;
   }
 
   const screenshotT0 = performance.now();
