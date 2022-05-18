@@ -50,7 +50,6 @@ export async function captureScreenshot(options: CaptureScreenShotOptions) {
   }
 
   const browser = await puppeteer.launch({
-    dumpio: true,
     args,
     defaultViewport: {
       width,
