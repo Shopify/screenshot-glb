@@ -93,5 +93,6 @@ dist/
 package-lock.json
 
 output.jpg
+output.png
 test/screenshots
 .DS_Store

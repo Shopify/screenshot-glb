@@ -14,6 +14,7 @@ interface CaptureScreenShotOptions extends Omit<TemplateRenderOptions, 'modelVie
   debug: boolean;
   quality: number;
   timeout: number;
+  formatExtension: string;
 }
 
 function logError(message: string) {
@@ -31,6 +32,7 @@ export async function captureScreenshot(options: CaptureScreenShotOptions) {
     quality,
     timeout,
     devicePixelRatio,
+    formatExtension,
   } = options;
   const screenshotTimeoutInSec = timeout / 1000;
 
@@ -156,12 +158,18 @@ export async function captureScreenshot(options: CaptureScreenShotOptions) {
 
   const screenshotT0 = performance.now();
 
-  const screenshot = await page.screenshot({
+  const captureOptions = {
     quality: quality * 100.0,
-    type: "jpeg",
+    type: formatExtension as "jpeg" | "png" | "webp",
     path: outputPath,
     omitBackground: true,
-  });
+  };
+
+  if (formatExtension === 'png') {
+    delete captureOptions.quality;
+  }
+
+  const screenshot = await page.screenshot(captureOptions);
 
   const screenshotT1 = performance.now();
 
