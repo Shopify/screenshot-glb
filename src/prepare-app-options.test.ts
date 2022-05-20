@@ -7,6 +7,7 @@ const defaultPreparedOptions = {
   backgroundColor: "rgba(255, 255, 255, 0)",
   debug: false,
   format: "image/png",
+  formatExtension: "png",
   width: 1024,
   height: 1024,
   inputPath: "http://localhost:8081/some_model.glb",
@@ -61,6 +62,7 @@ test("handles jpg format", () => {
     ...defaultPreparedOptions,
     outputPath: "./some_image.jpg",
     format: "image/jpeg",
+    formatExtension: "jpeg",
     backgroundColor: "rgba(255, 255, 255, 1)",
   });
 });
@@ -76,6 +78,7 @@ test("handles jpg with color override", () => {
     ...defaultPreparedOptions,
     outputPath: "./some_image.jpg",
     format: "image/jpeg",
+    formatExtension: "jpeg",
     backgroundColor: "rgba(255, 0, 255, 1)",
   });
 });

@@ -45,6 +45,7 @@ describe('captureScreenshot', () => {
   const height = 768;
   const backgroundColor = '#000000';
   const devicePixelRatio = 1;
+  const formatExtension = 'jpeg';
   const defaultParams = {
     inputPath,
     outputPath,
@@ -55,6 +56,7 @@ describe('captureScreenshot', () => {
     height,
     backgroundColor,
     devicePixelRatio,
+    formatExtension,
   };
   const htmlContent = '<div>some html</div>';
   let originalConsoleLog: (typeof console.log);

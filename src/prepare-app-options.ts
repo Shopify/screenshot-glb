@@ -36,7 +36,7 @@ export function prepareAppOptions({ modelPort, debug, argv }: Props) {
     model_viewer_version: modelViewerVersion,
   } = argv;
   const inputPath = `http://localhost:${modelPort}/${path.basename(input)}`;
-  const [outputPath, format] = parseOutputPathAndFormat(output, image_format);
+  const [outputPath, format, formatExtension] = parseOutputPathAndFormat(output, image_format);
   const defaultBackgroundColor =
     format === "image/jpeg" ? colors.white : colors.transparent;
   let modelViewerArgs: { [key: string]: string } = undefined;
@@ -60,6 +60,7 @@ export function prepareAppOptions({ modelPort, debug, argv }: Props) {
     inputPath,
     outputPath,
     format,
+    formatExtension,
     modelViewerArgs,
     modelViewerVersion,
   };

@@ -5,6 +5,7 @@ describe("parseOutputPathAndFormat", () => {
     expect(parseOutputPathAndFormat("image.jpg", "image/jpeg")).toEqual([
       "image.jpg",
       "image/jpeg",
+      "jpeg",
     ]);
   });
 
@@ -12,6 +13,7 @@ describe("parseOutputPathAndFormat", () => {
     expect(parseOutputPathAndFormat("image.png", "image/png")).toEqual([
       "image.png",
       "image/png",
+      "png",
     ]);
   });
 
@@ -19,6 +21,7 @@ describe("parseOutputPathAndFormat", () => {
     expect(parseOutputPathAndFormat("image.something", "image/jpeg")).toEqual([
       "image.something.jpg",
       "image/jpeg",
+      "jpeg",
     ]);
   });
 
@@ -26,11 +29,13 @@ describe("parseOutputPathAndFormat", () => {
     expect(parseOutputPathAndFormat("image.jpg", "image/png")).toEqual([
       "image.jpg",
       "image/jpeg",
+      "jpeg",
     ]);
 
     expect(parseOutputPathAndFormat("image.png", "image/jpeg")).toEqual([
       "image.png",
       "image/png",
+      "png",
     ]);
   });
 
@@ -38,11 +43,13 @@ describe("parseOutputPathAndFormat", () => {
     expect(parseOutputPathAndFormat("image", "image/png")).toEqual([
       "image.png",
       "image/png",
+      "png",
     ]);
 
     expect(parseOutputPathAndFormat("image", "image/jpeg")).toEqual([
       "image.jpg",
       "image/jpeg",
+      "jpeg",
     ]);
   });
 
