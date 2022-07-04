@@ -1,12 +1,12 @@
 import puppeteer, {Browser, Page} from 'puppeteer';
 import {captureScreenshot} from './capture-screenshot';
-import { htmlTemplate } from "./html-template";
-import { performance } from "perf_hooks";
-import { checkFileExistsAtUrl } from "./check-file-exists-at-url";
+import {htmlTemplate} from './html-template';
+import {performance} from 'perf_hooks';
+import {checkFileExistsAtUrl} from './check-file-exists-at-url';
 
-jest.mock("./html-template");
-jest.mock("./check-file-exists-at-url");
-jest.mock("perf_hooks", () => {
+jest.mock('./html-template');
+jest.mock('./check-file-exists-at-url');
+jest.mock('perf_hooks', () => {
   return {
     performance: {
       now: jest.fn(),
@@ -59,7 +59,7 @@ describe('captureScreenshot', () => {
     formatExtension,
   };
   const htmlContent = '<div>some html</div>';
-  let originalConsoleLog: (typeof console.log);
+  let originalConsoleLog: typeof console.log;
   let mockPage;
   let mockBrowser;
 
@@ -82,7 +82,7 @@ describe('captureScreenshot', () => {
 
   test('calls with correct args', async () => {
     await captureScreenshot({
-      ...defaultParams
+      ...defaultParams,
     });
 
     expect(puppeteer.launch).toHaveBeenCalledWith({
@@ -129,27 +129,24 @@ describe('captureScreenshot', () => {
 
   test('calls setContent', async () => {
     await captureScreenshot({
-      ...defaultParams
+      ...defaultParams,
     });
 
-    expect(mockPage.setContent).toHaveBeenCalledWith(
-      htmlContent,
-      { 
-        waitUntil: ['domcontentloaded', 'networkidle0']
-      }
-    );
+    expect(mockPage.setContent).toHaveBeenCalledWith(htmlContent, {
+      waitUntil: ['domcontentloaded', 'networkidle0'],
+    });
   });
 
   test('logs out correctly', async () => {
     const expectedLogs = [
-      "🚀  Launched browser (0.00s)",
-      "🗺  Loading template to DOMContentLoaded (0.00s)",
-      "🖌  Rendering screenshot of model (0.00s)",
-      "🖼  Captured screenshot (0.00s)",
+      '🚀  Launched browser (0.00s)',
+      '🗺  Loading template to DOMContentLoaded (0.00s)',
+      '🖌  Rendering screenshot of model (0.00s)',
+      '🖼  Captured screenshot (0.00s)',
     ];
 
     await captureScreenshot({
-      ...defaultParams
+      ...defaultParams,
     });
 
     expect(console.log).toHaveBeenCalledTimes(expectedLogs.length);
@@ -161,16 +158,16 @@ describe('captureScreenshot', () => {
   test('handles evaluate error', async () => {
     const error = new Error('some error');
     const expectedLogs = [
-      "🚀  Launched browser (0.00s)",
-      "🗺  Loading template to DOMContentLoaded (0.00s)",
-      "🖌  Rendering screenshot of model (0.00s)",
+      '🚀  Launched browser (0.00s)',
+      '🗺  Loading template to DOMContentLoaded (0.00s)',
+      '🖌  Rendering screenshot of model (0.00s)',
       `❌  Evaluate error: ${error}`,
     ];
 
     mockPage.evaluate.mockResolvedValue(error);
 
     await captureScreenshot({
-      ...defaultParams
+      ...defaultParams,
     });
 
     expect(console.log).toHaveBeenCalledTimes(expectedLogs.length);
@@ -184,10 +181,10 @@ describe('captureScreenshot', () => {
 
   test('adds correct listeners to page', async () => {
     await captureScreenshot({
-      ...defaultParams
+      ...defaultParams,
     });
 
-    const on = (mockPage.on as jest.Mock);
+    const on = mockPage.on as jest.Mock;
     expect(on).toHaveBeenCalledTimes(2);
     expect(on.mock.calls[0][0]).toBe('error');
     expect(on.mock.calls[1][0]).toBe('console');
@@ -197,12 +194,14 @@ describe('captureScreenshot', () => {
     const error = new Error('some error');
     let errorCallback;
 
-    (mockPage.on as jest.Mock).mockImplementation((event: string, callback: (error: Error) => void) => {
-      if (event === 'error') errorCallback = callback;
-    });
+    (mockPage.on as jest.Mock).mockImplementation(
+      (event: string, callback: (error: Error) => void) => {
+        if (event === 'error') errorCallback = callback;
+      },
+    );
 
     await captureScreenshot({
-      ...defaultParams
+      ...defaultParams,
     });
 
     errorCallback(error);
@@ -214,11 +213,11 @@ describe('captureScreenshot', () => {
     (checkFileExistsAtUrl as jest.Mock).mockResolvedValue(false);
 
     await captureScreenshot({
-      ...defaultParams
+      ...defaultParams,
     });
 
     expect(console.log).toHaveBeenLastCalledWith(
-      '❌  Model Viewer error: Error: Unfortunately Model Viewer undefined cannot be used to render a screenshot'
+      '❌  Model Viewer error: Error: Unfortunately Model Viewer undefined cannot be used to render a screenshot',
     );
   });
 });

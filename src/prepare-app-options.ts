@@ -1,7 +1,7 @@
-import path from "path";
+import path from 'path';
 
-import { parseOutputPathAndFormat } from "./parse-output-path-and-format";
-import { colors } from "./colors";
+import {parseOutputPathAndFormat} from './parse-output-path-and-format';
+import {colors} from './colors';
 
 interface Argv {
   input: string;
@@ -22,7 +22,7 @@ interface Props {
   debug?: boolean;
 }
 
-export function prepareAppOptions({ modelPort, debug, argv }: Props) {
+export function prepareAppOptions({modelPort, debug, argv}: Props) {
   const {
     input,
     output,
@@ -36,10 +36,13 @@ export function prepareAppOptions({ modelPort, debug, argv }: Props) {
     model_viewer_version: modelViewerVersion,
   } = argv;
   const inputPath = `http://localhost:${modelPort}/${path.basename(input)}`;
-  const [outputPath, format, formatExtension] = parseOutputPathAndFormat(output, image_format);
+  const [outputPath, format, formatExtension] = parseOutputPathAndFormat(
+    output,
+    image_format,
+  );
   const defaultBackgroundColor =
-    format === "image/jpeg" ? colors.white : colors.transparent;
-  let modelViewerArgs: { [key: string]: string } = undefined;
+    format === 'image/jpeg' ? colors.white : colors.transparent;
+  let modelViewerArgs: {[key: string]: string} = undefined;
 
   if (model_viewer_attributes) {
     modelViewerArgs = {};

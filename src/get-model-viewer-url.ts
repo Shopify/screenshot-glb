@@ -8,7 +8,9 @@ export function getModelViewerUrl(version?: string) {
   const result = regexGetVersion.exec(version);
 
   if (!result) {
-    throw new Error(`"${version}" was not valid version. Example version: 1.10`);
+    throw new Error(
+      `"${version}" was not valid version. Example version: 1.10`,
+    );
   }
 
   const majorMinor = result[1];
