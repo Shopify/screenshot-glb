@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
-import path from "path";
-import yargs from "yargs/yargs";
+import path from 'path';
+import yargs from 'yargs/yargs';
 
-import { FileServer } from "./file-server";
-import { prepareAppOptions } from "./prepare-app-options";
-import { captureScreenshot } from "./capture-screenshot";
+import {FileServer} from './file-server';
+import {prepareAppOptions} from './prepare-app-options';
+import {captureScreenshot} from './capture-screenshot';
 import {
   DEFAULT_WIDTH,
   DEFAULT_HEIGHT,
@@ -14,79 +14,80 @@ import {
   DEFAULT_TIMEOUT_MILLISECONDS,
   DEFAULT_DEBUG,
   DEFAULT_VERBOSE_LOGGING,
-} from "./defaults";
+} from './defaults';
 
 const argv = yargs(process.argv.slice(2)).options({
   input: {
-    type: "string",
-    alias: "i",
-    describe: "Input glTF 2.0 binary (GLB) filepath",
+    type: 'string',
+    alias: 'i',
+    describe: 'Input glTF 2.0 binary (GLB) filepath',
     demandOption: true,
   },
   output: {
-    type: "string",
-    alias: "o",
-    describe: "Output screenshot filepath",
+    type: 'string',
+    alias: 'o',
+    describe: 'Output screenshot filepath',
     demandOption: true,
   },
   color: {
-    type: "string",
-    alias: "c",
+    type: 'string',
+    alias: 'c',
     describe:
-      "Output image background color (defaults to transparent, accepts HEX or RGB)",
+      'Output image background color (defaults to transparent, accepts HEX or RGB)',
   },
   width: {
-    type: "number",
-    alias: "w",
-    describe: "Output image width",
+    type: 'number',
+    alias: 'w',
+    describe: 'Output image width',
     default: DEFAULT_WIDTH,
   },
   height: {
-    type: "number",
-    alias: "h",
-    describe: "Output image height",
+    type: 'number',
+    alias: 'h',
+    describe: 'Output image height',
     default: DEFAULT_HEIGHT,
   },
   image_format: {
-    type: "string",
-    alias: "f",
+    type: 'string',
+    alias: 'f',
     describe: "Output image format (defaults to 'image/png')",
     default: DEFAULT_FORMAT,
   },
   image_quality: {
-    type: "number",
-    alias: "q",
-    describe: "Quality of the output image",
+    type: 'number',
+    alias: 'q',
+    describe: 'Quality of the output image',
     default: DEFAULT_QUALITY,
   },
   timeout: {
-    type: "number",
-    alias: "t",
-    describe: "Timeout length in milliseconds",
+    type: 'number',
+    alias: 't',
+    describe: 'Timeout length in milliseconds',
     default: DEFAULT_TIMEOUT_MILLISECONDS,
   },
   debug: {
-    type: "boolean",
-    alias: "d",
-    describe: "Enable Debug Mode",
+    type: 'boolean',
+    alias: 'd',
+    describe: 'Enable Debug Mode',
     default: DEFAULT_DEBUG,
   },
   verbose: {
-    type: "boolean",
-    alias: "v",
-    describe: "Enable verbose logging",
+    type: 'boolean',
+    alias: 'v',
+    describe: 'Enable verbose logging',
     default: DEFAULT_VERBOSE_LOGGING,
   },
   model_viewer_version: {
-    type: "string",
-    alias: "@",
-    describe: "Model viewer version to be used. If nothing is passed defaults to latest"
+    type: 'string',
+    alias: '@',
+    describe:
+      'Model viewer version to be used. If nothing is passed defaults to latest',
   },
   model_viewer_attributes: {
-    type: "string",
-    alias: "m",
+    type: 'string',
+    alias: 'm',
     describe:
-      "Set <model-viewer> attributes by passing them as url params eg. exposure=2&environment-image=neutral",
+      'Set <model-viewer> attributes by passing them as url params eg. exposure=2&environment-image=neutral',
   },
 }).argv;
 
@@ -102,7 +103,7 @@ const argv = yargs(process.argv.slice(2)).options({
 
   let processStatus = 0;
   try {
-    await captureScreenshot({ ...options, devicePixelRatio: 1.0 });
+    await captureScreenshot({...options, devicePixelRatio: 1.0});
   } catch (err) {
     console.log(`❌ Unhandled: ${err}`);
     processStatus = 1;

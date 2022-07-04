@@ -1,6 +1,6 @@
-import {getModelViewerUrl} from "./get-model-viewer-url";
+import {getModelViewerUrl} from './get-model-viewer-url';
 
-type AttributesObject = { [key: string]: any };
+type AttributesObject = {[key: string]: any};
 
 export interface TemplateRenderOptions {
   modelViewerUrl: string;
@@ -13,26 +13,26 @@ export interface TemplateRenderOptions {
 }
 
 function toHTMLAttributeString(args: AttributesObject | undefined) {
-  if (!args) return "";
+  if (!args) return '';
 
   return Object.entries(args)
     .map(([key, value]) => {
       return `${key}="${value}"`;
     })
-    .join("\n");
+    .join('\n');
 }
 
 const errorMessagesForAttributeKey = {
-  src: "`src` cannot be ovewritten pass the source via -i instead",
-  "interaction-prompt":
-    "`interaction-prompt` cannot be passed since it would cause unexpected renders",
-  style: "`style` cannot be passed since it would cause unexpected renders",
-  id: "`id` cannot be passed since it would cause the renderer to break",
+  src: '`src` cannot be ovewritten pass the source via -i instead',
+  'interaction-prompt':
+    '`interaction-prompt` cannot be passed since it would cause unexpected renders',
+  style: '`style` cannot be passed since it would cause unexpected renders',
+  id: '`id` cannot be passed since it would cause the renderer to break',
 };
 
 function validateCustomAttributes(
   defaultAttributes: AttributesObject,
-  customAttributes: AttributesObject | undefined
+  customAttributes: AttributesObject | undefined,
 ) {
   if (!customAttributes) {
     return;
@@ -59,9 +59,9 @@ export function htmlTemplate({
   modelViewerArgs,
 }: TemplateRenderOptions): string {
   const defaultAttributes = {
-    id: "snapshot-viewer",
+    id: 'snapshot-viewer',
     style: `background-color: ${backgroundColor};`,
-    "interaction-prompt": "none",
+    'interaction-prompt': 'none',
     src: inputPath,
   };
 

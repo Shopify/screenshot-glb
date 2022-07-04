@@ -1,39 +1,39 @@
-import http from "http";
-import fs from "fs";
-import path from "path";
-import { AddressInfo } from "net";
+import http from 'http';
+import fs from 'fs';
+import path from 'path';
+import {AddressInfo} from 'net';
 
 const createFileServer = (mountDirectory) => {
   return http.createServer((request, response) => {
     const filePath = path.join(mountDirectory, request.url);
     const extname = String(path.extname(filePath)).toLowerCase();
     const mimeTypes = {
-      ".glb": "application/gltf-binary",
-      ".js": "application/javascript",
+      '.glb': 'application/gltf-binary',
+      '.js': 'application/javascript',
     };
 
-    const contentType = mimeTypes[extname] || "application/octet-stream";
+    const contentType = mimeTypes[extname] || 'application/octet-stream';
     const headers = {
-      "Content-Type": contentType,
-      "Access-Control-Allow-Origin": "*",
+      'Content-Type': contentType,
+      'Access-Control-Allow-Origin': '*',
     };
 
     fs.readFile(filePath, (error, content) => {
       if (error) {
-        if (error.code == "ENOENT") {
+        if (error.code == 'ENOENT') {
           response.writeHead(404, headers);
-          response.end("File not found", "utf-8");
+          response.end('File not found', 'utf-8');
         } else {
           response.writeHead(500);
           response.end(
-            "Sorry, check with the site admin for error: " +
+            'Sorry, check with the site admin for error: ' +
               error.code +
-              " ..\n"
+              ' ..\n',
           );
         }
       } else {
         response.writeHead(200, headers);
-        response.end(content, "utf-8");
+        response.end(content, 'utf-8');
       }
     });
   });

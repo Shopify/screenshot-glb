@@ -1,14 +1,15 @@
-import puppeteer from "puppeteer";
-import { performance } from "perf_hooks";
-import { htmlTemplate, TemplateRenderOptions } from "./html-template";
-import { getModelViewerUrl } from "./get-model-viewer-url";
-import { checkFileExistsAtUrl } from "./check-file-exists-at-url";
+import puppeteer from 'puppeteer';
+import {performance} from 'perf_hooks';
+import {htmlTemplate, TemplateRenderOptions} from './html-template';
+import {getModelViewerUrl} from './get-model-viewer-url';
+import {checkFileExistsAtUrl} from './check-file-exists-at-url';
 
 const timeDelta = (start, end) => {
   return ((end - start) / 1000).toPrecision(3);
 };
 
-interface CaptureScreenShotOptions extends Omit<TemplateRenderOptions, 'modelViewerUrl'> {
+interface CaptureScreenShotOptions
+  extends Omit<TemplateRenderOptions, 'modelViewerUrl'> {
   modelViewerVersion?: string;
   outputPath: string;
   debug: boolean;
@@ -63,13 +64,13 @@ export async function captureScreenshot(options: CaptureScreenShotOptions) {
 
   const page = await browser.newPage();
 
-  page.on("error", (error) => {
+  page.on('error', (error) => {
     console.log(`🚨  Page Error: ${error}`);
   });
 
-  page.on("console", async (message) => {
+  page.on('console', async (message) => {
     const args = await Promise.all(
-      message.args().map((arg) => arg.jsonValue())
+      message.args().map((arg) => arg.jsonValue()),
     );
 
     if (args.length) {
@@ -87,22 +88,26 @@ export async function captureScreenshot(options: CaptureScreenShotOptions) {
   const modelViewerUrlExists = await checkFileExistsAtUrl(modelViewerUrl);
 
   if (!modelViewerUrlExists) {
-    logError(`Model Viewer error: ${new Error(
-      `Unfortunately Model Viewer ${modelViewerVersion} cannot be used to render a screenshot`
-    )}`);
+    logError(
+      `Model Viewer error: ${new Error(
+        `Unfortunately Model Viewer ${modelViewerVersion} cannot be used to render a screenshot`,
+      )}`,
+    );
     return;
   }
 
   const data = htmlTemplate({...options, modelViewerUrl});
-  await page.setContent(data, { waitUntil: ['domcontentloaded', 'networkidle0'] });
+  await page.setContent(data, {
+    waitUntil: ['domcontentloaded', 'networkidle0'],
+  });
 
   const contentT1 = performance.now();
 
   console.log(
     `🗺  Loading template to DOMContentLoaded (${timeDelta(
       contentT0,
-      contentT1
-    )}s)`
+      contentT1,
+    )}s)`,
   );
 
   const renderT0 = performance.now();
@@ -113,14 +118,16 @@ export async function captureScreenshot(options: CaptureScreenShotOptions) {
       if (maxTimeInSec > 0) {
         timeout = setTimeout(() => {
           reject(
-            new Error(`Stop capturing screenshot after ${maxTimeInSec} seconds`)
+            new Error(
+              `Stop capturing screenshot after ${maxTimeInSec} seconds`,
+            ),
           );
         }, maxTimeInSec * 1000);
       }
 
-      const modelViewer = document.getElementById("snapshot-viewer");
+      const modelViewer = document.getElementById('snapshot-viewer');
       modelViewer.addEventListener(
-        "poster-dismissed",
+        'poster-dismissed',
         () => {
           requestAnimationFrame(() => {
             requestAnimationFrame(() => {
@@ -133,7 +140,7 @@ export async function captureScreenshot(options: CaptureScreenShotOptions) {
             });
           });
         },
-        { once: true }
+        {once: true},
       );
     });
 
@@ -147,7 +154,7 @@ export async function captureScreenshot(options: CaptureScreenShotOptions) {
 
   const renderT1 = performance.now();
   console.log(
-    `🖌  Rendering screenshot of model (${timeDelta(renderT0, renderT1)}s)`
+    `🖌  Rendering screenshot of model (${timeDelta(renderT0, renderT1)}s)`,
   );
 
   if (evaluateError) {
@@ -160,7 +167,7 @@ export async function captureScreenshot(options: CaptureScreenShotOptions) {
 
   const captureOptions = {
     quality: quality * 100.0,
-    type: formatExtension as "jpeg" | "png" | "webp",
+    type: formatExtension as 'jpeg' | 'png' | 'webp',
     path: outputPath,
     omitBackground: true,
   };
@@ -174,7 +181,7 @@ export async function captureScreenshot(options: CaptureScreenShotOptions) {
   const screenshotT1 = performance.now();
 
   console.log(
-    `🖼  Captured screenshot (${timeDelta(screenshotT0, screenshotT1)}s)`
+    `🖼  Captured screenshot (${timeDelta(screenshotT0, screenshotT1)}s)`,
   );
 
   await browser.close();
