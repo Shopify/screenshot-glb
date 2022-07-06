@@ -4,14 +4,11 @@ import {htmlTemplate, TemplateRenderOptions} from './html-template';
 import {getModelViewerUrl} from './get-model-viewer-url';
 import {checkFileExistsAtUrl} from './check-file-exists-at-url';
 import {CaptureScreenShotOptions} from './types/CaptureScreenshotOptions';
+import {logError} from './log-error';
 
 const timeDelta = (start, end) => {
   return ((end - start) / 1000).toPrecision(3);
 };
-
-function logError(message: string) {
-  console.log(`❌  ${message}`);
-}
 
 export async function captureScreenshot(options: CaptureScreenShotOptions) {
   const browserT0 = performance.now();

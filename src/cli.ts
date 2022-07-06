@@ -15,6 +15,7 @@ import {
   DEFAULT_DEBUG,
   DEFAULT_VERBOSE_LOGGING,
 } from './defaults';
+import {logUnhandledError} from './log-error';
 
 const argv = yargs(process.argv.slice(2)).options({
   input: {
@@ -105,7 +106,7 @@ const argv = yargs(process.argv.slice(2)).options({
   try {
     await captureScreenshot(options);
   } catch (err) {
-    console.log(`❌ Unhandled: ${err}`);
+    logUnhandledError(err);
     processStatus = 1;
   }
 
