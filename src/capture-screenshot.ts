@@ -3,20 +3,11 @@ import {performance} from 'perf_hooks';
 import {htmlTemplate, TemplateRenderOptions} from './html-template';
 import {getModelViewerUrl} from './get-model-viewer-url';
 import {checkFileExistsAtUrl} from './check-file-exists-at-url';
+import {CaptureScreenShotOptions} from './types/CaptureScreenshotOptions';
 
 const timeDelta = (start, end) => {
   return ((end - start) / 1000).toPrecision(3);
 };
-
-interface CaptureScreenShotOptions
-  extends Omit<TemplateRenderOptions, 'modelViewerUrl'> {
-  modelViewerVersion?: string;
-  outputPath: string;
-  debug: boolean;
-  quality: number;
-  timeout: number;
-  formatExtension: string;
-}
 
 function logError(message: string) {
   console.log(`❌  ${message}`);

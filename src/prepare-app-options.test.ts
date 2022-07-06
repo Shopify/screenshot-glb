@@ -1,12 +1,12 @@
 import {prepareAppOptions} from './prepare-app-options';
+import {CaptureScreenShotOptions} from './types/CaptureScreenshotOptions';
 
 const modelPort = 8081;
 const debug = false;
 
-const defaultPreparedOptions = {
+const defaultPreparedOptions: CaptureScreenShotOptions = {
   backgroundColor: 'rgba(255, 255, 255, 0)',
   debug: false,
-  format: 'image/png',
   formatExtension: 'png',
   width: 1024,
   height: 1024,
@@ -14,6 +14,9 @@ const defaultPreparedOptions = {
   outputPath: './some_image.png',
   quality: 0.92,
   timeout: 10000,
+  devicePixelRatio: 1,
+  modelViewerArgs: undefined,
+  modelViewerVersion: undefined,
 };
 
 function getArgv(optionalAndOverrides = {}) {
@@ -61,7 +64,6 @@ test('handles jpg format', () => {
   expect(prepareAppOptions({modelPort, debug, argv})).toEqual({
     ...defaultPreparedOptions,
     outputPath: './some_image.jpg',
-    format: 'image/jpeg',
     formatExtension: 'jpeg',
     backgroundColor: 'rgba(255, 255, 255, 1)',
   });
@@ -77,7 +79,6 @@ test('handles jpg with color override', () => {
   expect(prepareAppOptions({modelPort, debug, argv})).toEqual({
     ...defaultPreparedOptions,
     outputPath: './some_image.jpg',
-    format: 'image/jpeg',
     formatExtension: 'jpeg',
     backgroundColor: 'rgba(255, 0, 255, 1)',
   });
