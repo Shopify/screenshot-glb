@@ -2,6 +2,7 @@ import path from 'path';
 
 import {parseOutputPathAndFormat} from './parse-output-path-and-format';
 import {colors} from './colors';
+import {CaptureScreenShotOptions} from './types/CaptureScreenshotOptions';
 
 interface Argv {
   input: string;
@@ -22,7 +23,11 @@ interface Props {
   debug?: boolean;
 }
 
-export function prepareAppOptions({modelPort, debug, argv}: Props) {
+export function prepareAppOptions({
+  modelPort,
+  debug,
+  argv,
+}: Props): CaptureScreenShotOptions {
   const {
     input,
     output,
@@ -62,9 +67,9 @@ export function prepareAppOptions({modelPort, debug, argv}: Props) {
     debug,
     inputPath,
     outputPath,
-    format,
     formatExtension,
     modelViewerArgs,
     modelViewerVersion,
+    devicePixelRatio: 1,
   };
 }
