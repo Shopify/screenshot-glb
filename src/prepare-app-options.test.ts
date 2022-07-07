@@ -1,11 +1,25 @@
 import {prepareAppOptions} from './prepare-app-options';
 import {CaptureScreenShotOptions} from './types/CaptureScreenshotOptions';
 import {checkFileExistsAtUrl} from './check-file-exists-at-url';
+import {copyFile} from 'fs';
 
 jest.mock('./check-file-exists-at-url');
+jest.mock('fs', () => {
+  return {
+    copyFile: jest.fn((_src, _dest, callback) => {
+      callback();
+    }),
+  };
+});
 
-const modelPort = 8081;
+const localServerPath = './';
+const localServerPort = 8081;
 const debug = false;
+const defaultArgs = {
+  localServerPath,
+  localServerPort,
+  debug,
+};
 
 const defaultPreparedOptions: CaptureScreenShotOptions = {
   backgroundColor: 'rgba(255, 255, 255, 0)',
@@ -52,7 +66,7 @@ test('handles args', async () => {
     color: 'rgba(255, 0, 255, 0)',
   });
 
-  await expect(prepareAppOptions({modelPort, debug, argv})).resolves.toEqual({
+  await expect(prepareAppOptions({...defaultArgs, argv})).resolves.toEqual({
     ...defaultPreparedOptions,
     backgroundColor: 'rgba(255, 0, 255, 0)',
     width: 2048,
@@ -68,7 +82,7 @@ test('handles jpg format', async () => {
     image_format: 'image/jpeg',
   });
 
-  await expect(prepareAppOptions({modelPort, debug, argv})).resolves.toEqual({
+  await expect(prepareAppOptions({...defaultArgs, argv})).resolves.toEqual({
     ...defaultPreparedOptions,
     outputPath: './some_image.jpg',
     formatExtension: 'jpeg',
@@ -83,7 +97,7 @@ test('handles jpg with color override', async () => {
     color: 'rgba(255, 0, 255, 1)',
   });
 
-  await expect(prepareAppOptions({modelPort, debug, argv})).resolves.toEqual({
+  await expect(prepareAppOptions({...defaultArgs, argv})).resolves.toEqual({
     ...defaultPreparedOptions,
     outputPath: './some_image.jpg',
     formatExtension: 'jpeg',
@@ -95,7 +109,7 @@ test('handles model viewer attributes', async () => {
   const argv = getArgv({
     model_viewer_attributes: 'exposure=10&camera-orbit=45deg 55deg 2.5m',
   });
-  await expect(prepareAppOptions({modelPort, debug, argv})).resolves.toEqual({
+  await expect(prepareAppOptions({...defaultArgs, argv})).resolves.toEqual({
     ...defaultPreparedOptions,
     modelViewerArgs: {
       'camera-orbit': '45deg 55deg 2.5m',
@@ -109,7 +123,7 @@ test('handles model viewer version', async () => {
     model_viewer_version: '1.10',
   });
 
-  await expect(prepareAppOptions({modelPort, debug, argv})).resolves.toEqual({
+  await expect(prepareAppOptions({...defaultArgs, argv})).resolves.toEqual({
     ...defaultPreparedOptions,
     modelViewerUrl:
       'https://cdn.shopify.com/shopifycloud/model-viewer/v1.10/model-viewer.js',
@@ -123,9 +137,35 @@ test('handles no url for model viewer', async () => {
     model_viewer_version: undefined,
   });
 
-  await expect(prepareAppOptions({modelPort, debug, argv})).rejects.toEqual(
+  await expect(prepareAppOptions({...defaultArgs, argv})).rejects.toEqual(
     new Error(
       'Unfortunately Model Viewer undefined cannot be used to render a screenshot',
     ),
   );
+});
+
+test('errors if local model viewer path + version are passed', async () => {
+  const argv = getArgv({
+    model_viewer_path: './model-viewer.js',
+    model_viewer_version: '1.1',
+  });
+
+  await expect(prepareAppOptions({...defaultArgs, argv})).rejects.toEqual(
+    new Error(
+      'Please pass only Model Viewer Version or Model Viewer Path not both',
+    ),
+  );
+});
+
+test('handles local model viewer path for model viewer', async () => {
+  const argv = getArgv({
+    model_viewer_path: './model-viewer.js',
+  });
+
+  await expect(prepareAppOptions({...defaultArgs, argv})).resolves.toEqual({
+    ...defaultPreparedOptions,
+    modelViewerUrl: 'http://localhost:8081/model-viewer.js',
+  });
+
+  expect(copyFile).toBeCalledTimes(1);
 });

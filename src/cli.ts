@@ -79,6 +79,11 @@ const argv = yargs(process.argv.slice(2)).options({
     describe: 'Enable verbose logging',
     default: DEFAULT_VERBOSE_LOGGING,
   },
+  model_viewer_path: {
+    type: 'string',
+    alias: 'p',
+    describe: 'A local path to a Model Viewer build',
+  },
   model_viewer_version: {
     type: 'string',
     alias: '@',
@@ -95,20 +100,22 @@ const argv = yargs(process.argv.slice(2)).options({
 
 (async () => {
   async function closeProgram() {
-    await modelServer.stop();
+    await localServer.stop();
 
     process.exit(processStatus);
   }
 
-  const modelServer = new FileServer(path.dirname(argv.input));
+  const localServerPath = path.dirname(argv.input);
+  const localServer = new FileServer(localServerPath);
   let options: CaptureScreenShotOptions;
   let processStatus = 0;
 
-  await modelServer.start();
+  await localServer.start();
 
   try {
     options = await prepareAppOptions({
-      modelPort: modelServer.port,
+      localServerPort: localServer.port,
+      localServerPath,
       argv,
     });
   } catch (error) {
