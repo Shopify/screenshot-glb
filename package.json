@@ -17,7 +17,8 @@
     "dev": "yarn build && node dist/cli.js -i ./test/fixtures/WaterBottle.glb -o output.jpg -w 1024 -h 2048 -q 1.00 -v -t 30000 -m \"exposure=0.92&camera-orbit=88.59deg 59.01deg 0.24m&camera-target=0.06m 0.04m 0m&environment-image=neutral\"",
     "dev:version": "yarn build && node dist/cli.js -i ./test/fixtures/WaterBottle.glb -o output.jpg -@ 1.9 -w 1024 -h 2048 -q 1.00 -v -t 30000 -m \"exposure=0.92&camera-orbit=88.59deg 59.01deg 0.24m&camera-target=0.06m 0.04m 0m&environment-image=neutral\"",
     "dev:no-version": "yarn build && node dist/cli.js -i ./test/fixtures/WaterBottle.glb -o output.jpg -@ 100000.0 -w 1024 -h 2048 -q 1.00 -v -t 30000 -m \"exposure=0.92&camera-orbit=88.59deg 59.01deg 0.24m&camera-target=0.06m 0.04m 0m&environment-image=neutral\"",
-    "dev:png": "yarn build && node dist/cli.js -i ./test/fixtures/WaterBottle.glb -o output.png -c \"rgba(0.0, 0.0, 0.0, 0.0)\" -w 1024 -h 2048 -q 1.00 -v -t 30000 -m \"exposure=0.92&camera-orbit=88.59deg 59.01deg 0.24m&camera-target=0.06m 0.04m 0m&environment-image=neutral\""
+    "dev:png": "yarn build && node dist/cli.js -i ./test/fixtures/WaterBottle.glb -o output.png -c \"rgba(0.0, 0.0, 0.0, 0.0)\" -w 1024 -h 2048 -q 1.00 -v -t 30000 -m \"exposure=0.92&camera-orbit=88.59deg 59.01deg 0.24m&camera-target=0.06m 0.04m 0m&environment-image=neutral\"",
+    "dev:local-js": "yarn build && node dist/cli.js -i ./test/fixtures/WaterBottle.glb -o output.jpg --model_viewer_path ./test/fixtures/model-viewer.js -w 1024 -h 2048 -q 1.00 -v -t 30000 -m \"exposure=0.92&camera-orbit=88.59deg 59.01deg 0.24m&camera-target=0.06m 0.04m 0m&environment-image=neutral\""
   },
   "author": "Stephan Leroux <stephan.leroux@shopify.com>",
   "license": "MIT",

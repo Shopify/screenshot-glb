@@ -1,3 +1,4 @@
+import {copyFile as copyFileNode} from 'fs';
 import path from 'path';
 
 import {parseOutputPathAndFormat} from './parse-output-path-and-format';
@@ -5,6 +6,7 @@ import {colors} from './colors';
 import {CaptureScreenShotOptions} from './types/CaptureScreenshotOptions';
 import {getModelViewerUrl} from './get-model-viewer-url';
 import {checkFileExistsAtUrl} from './check-file-exists-at-url';
+import {getLocalUrl} from './get-local-url';
 
 export interface Argv {
   input: string;
@@ -16,18 +18,34 @@ export interface Argv {
   width: number;
   height: number;
   color?: string;
+  model_viewer_path?: string;
   model_viewer_version?: string;
   model_viewer_attributes?: string;
 }
 
 export interface PrepareAppOptionsArgs {
-  modelPort: number;
+  localServerPort: number;
+  localServerPath: string;
   argv: Argv;
   debug?: boolean;
 }
 
+function copyFile(src: string, dest: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    copyFileNode(src, dest, (error) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+
+      resolve();
+    });
+  });
+}
+
 export async function prepareAppOptions({
-  modelPort,
+  localServerPath,
+  localServerPort,
   debug,
   argv,
 }: PrepareAppOptionsArgs): Promise<CaptureScreenShotOptions> {
@@ -42,8 +60,12 @@ export async function prepareAppOptions({
     color: backgroundColor,
     model_viewer_attributes,
     model_viewer_version: modelViewerVersion,
+    model_viewer_path: modelViewerPath,
   } = argv;
-  const inputPath = `http://localhost:${modelPort}/${path.basename(input)}`;
+  const inputPath = getLocalUrl({
+    port: localServerPort,
+    fileName: path.basename(input),
+  });
   const [outputPath, format, formatExtension] = parseOutputPathAndFormat(
     output,
     image_format,
@@ -61,7 +83,25 @@ export async function prepareAppOptions({
     });
   }
 
-  const modelViewerUrl = getModelViewerUrl(modelViewerVersion);
+  if (modelViewerVersion && modelViewerPath) {
+    throw new Error(
+      'Please pass only Model Viewer Version or Model Viewer Path not both',
+    );
+  }
+
+  let modelViewerUrl: string = getModelViewerUrl(modelViewerVersion);
+
+  if (modelViewerPath) {
+    await copyFile(
+      path.resolve(modelViewerPath),
+      path.join(localServerPath, 'model-viewer.js'),
+    );
+    modelViewerUrl = getLocalUrl({
+      port: localServerPort,
+      fileName: 'model-viewer.js',
+    });
+  }
+
   const modelViewerUrlExists = await checkFileExistsAtUrl(modelViewerUrl);
 
   if (!modelViewerUrlExists) {
