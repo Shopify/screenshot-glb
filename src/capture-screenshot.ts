@@ -1,8 +1,6 @@
 import puppeteer from 'puppeteer';
 import {performance} from 'perf_hooks';
 import {htmlTemplate, TemplateRenderOptions} from './html-template';
-import {getModelViewerUrl} from './get-model-viewer-url';
-import {checkFileExistsAtUrl} from './check-file-exists-at-url';
 import {CaptureScreenShotOptions} from './types/CaptureScreenshotOptions';
 import {logError} from './log-error';
 
@@ -13,7 +11,7 @@ const timeDelta = (start, end) => {
 export async function captureScreenshot(options: CaptureScreenShotOptions) {
   const browserT0 = performance.now();
   const {
-    modelViewerVersion,
+    modelViewerUrl,
     width,
     height,
     outputPath,
@@ -71,18 +69,6 @@ export async function captureScreenshot(options: CaptureScreenShotOptions) {
   console.log(`🚀  Launched browser (${timeDelta(browserT0, browserT1)}s)`);
 
   const contentT0 = performance.now();
-
-  const modelViewerUrl = getModelViewerUrl(modelViewerVersion);
-  const modelViewerUrlExists = await checkFileExistsAtUrl(modelViewerUrl);
-
-  if (!modelViewerUrlExists) {
-    logError(
-      `Model Viewer error: ${new Error(
-        `Unfortunately Model Viewer ${modelViewerVersion} cannot be used to render a screenshot`,
-      )}`,
-    );
-    return;
-  }
 
   const data = htmlTemplate({...options, modelViewerUrl});
   await page.setContent(data, {

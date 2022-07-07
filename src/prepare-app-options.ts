@@ -3,10 +3,13 @@ import path from 'path';
 import {parseOutputPathAndFormat} from './parse-output-path-and-format';
 import {colors} from './colors';
 import {CaptureScreenShotOptions} from './types/CaptureScreenshotOptions';
+import {getModelViewerUrl} from './get-model-viewer-url';
+import {checkFileExistsAtUrl} from './check-file-exists-at-url';
 
-interface Argv {
+export interface Argv {
   input: string;
   output: string;
+  debug?: boolean;
   image_format: string;
   image_quality: number;
   timeout: number;
@@ -17,17 +20,17 @@ interface Argv {
   model_viewer_attributes?: string;
 }
 
-interface Props {
+export interface PrepareAppOptionsArgs {
   modelPort: number;
   argv: Argv;
   debug?: boolean;
 }
 
-export function prepareAppOptions({
+export async function prepareAppOptions({
   modelPort,
   debug,
   argv,
-}: Props): CaptureScreenShotOptions {
+}: PrepareAppOptionsArgs): Promise<CaptureScreenShotOptions> {
   const {
     input,
     output,
@@ -58,7 +61,17 @@ export function prepareAppOptions({
     });
   }
 
+  const modelViewerUrl = getModelViewerUrl(modelViewerVersion);
+  const modelViewerUrlExists = await checkFileExistsAtUrl(modelViewerUrl);
+
+  if (!modelViewerUrlExists) {
+    throw new Error(
+      `Unfortunately Model Viewer ${modelViewerVersion} cannot be used to render a screenshot`,
+    );
+  }
+
   return {
+    modelViewerUrl,
     backgroundColor: backgroundColor || defaultBackgroundColor,
     quality,
     timeout,
@@ -69,7 +82,6 @@ export function prepareAppOptions({
     outputPath,
     formatExtension,
     modelViewerArgs,
-    modelViewerVersion,
     devicePixelRatio: 1,
   };
 }

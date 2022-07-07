@@ -15,7 +15,8 @@ import {
   DEFAULT_DEBUG,
   DEFAULT_VERBOSE_LOGGING,
 } from './defaults';
-import {logUnhandledError} from './log-error';
+import {logError, logUnhandledError} from './log-error';
+import {CaptureScreenShotOptions} from './types/CaptureScreenshotOptions';
 
 const argv = yargs(process.argv.slice(2)).options({
   input: {
@@ -93,16 +94,33 @@ const argv = yargs(process.argv.slice(2)).options({
 }).argv;
 
 (async () => {
+  async function closeProgram() {
+    await modelServer.stop();
+
+    process.exit(processStatus);
+  }
+
   const modelServer = new FileServer(path.dirname(argv.input));
+  let options: CaptureScreenShotOptions;
+  let processStatus = 0;
 
   await modelServer.start();
 
-  const options = prepareAppOptions({
-    modelPort: modelServer.port,
-    argv,
-  });
+  try {
+    options = await prepareAppOptions({
+      modelPort: modelServer.port,
+      argv,
+    });
+  } catch (error) {
+    logError(error);
+    processStatus = 1;
+  }
 
-  let processStatus = 0;
+  if (processStatus !== 0) {
+    await closeProgram();
+    return;
+  }
+
   try {
     await captureScreenshot(options);
   } catch (err) {
@@ -110,7 +128,5 @@ const argv = yargs(process.argv.slice(2)).options({
     processStatus = 1;
   }
 
-  await modelServer.stop();
-
-  process.exit(processStatus);
+  await closeProgram();
 })();
