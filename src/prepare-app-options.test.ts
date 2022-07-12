@@ -1,22 +1,17 @@
-import {prepareAppOptions} from './prepare-app-options';
+import {prepareAppOptions, PrepareAppOptionsArgs} from './prepare-app-options';
 import {CaptureScreenShotOptions} from './types/CaptureScreenshotOptions';
 import {checkFileExistsAtUrl} from './check-file-exists-at-url';
 import {copyFile} from 'fs';
+import {FileHandler} from './file-handler';
 
 jest.mock('./check-file-exists-at-url');
-jest.mock('fs', () => {
-  return {
-    copyFile: jest.fn((_src, _dest, callback) => {
-      callback();
-    }),
-  };
-});
+jest.mock('./file-handler');
 
-const localServerPath = './';
+const fileHandler = new FileHandler();
 const localServerPort = 8081;
 const debug = false;
 const defaultArgs = {
-  localServerPath,
+  fileHandler,
   localServerPort,
   debug,
 };
@@ -26,7 +21,7 @@ const defaultPreparedOptions: CaptureScreenShotOptions = {
   debug: false,
   width: 1024,
   height: 1024,
-  inputPath: 'http://localhost:8081/some_model.glb',
+  inputPath: './some-glb/some_model.glb',
   outputPath: './some_image.png',
   quality: 0.92,
   timeout: 10000,
@@ -57,6 +52,8 @@ beforeEach(() => {
   (checkFileExistsAtUrl as jest.Mock).mockResolvedValue(true);
 });
 
+afterEach(jest.clearAllMocks);
+
 test('handles args', async () => {
   const argv = getArgv({
     width: 2048,
@@ -68,6 +65,7 @@ test('handles args', async () => {
 
   await expect(prepareAppOptions({...defaultArgs, argv})).resolves.toEqual({
     ...defaultPreparedOptions,
+    inputPath: 'http://localhost:8081/some_model.glb',
     backgroundColor: 'rgba(255, 0, 255, 0)',
     width: 2048,
     height: 2048,
@@ -84,6 +82,7 @@ test('handles jpg format', async () => {
 
   await expect(prepareAppOptions({...defaultArgs, argv})).resolves.toEqual({
     ...defaultPreparedOptions,
+    inputPath: 'http://localhost:8081/some_model.glb',
     outputPath: './some_image.jpg',
     formatExtension: 'jpeg',
     backgroundColor: 'rgba(255, 255, 255, 1)',
@@ -99,10 +98,19 @@ test('handles jpg with color override', async () => {
 
   await expect(prepareAppOptions({...defaultArgs, argv})).resolves.toEqual({
     ...defaultPreparedOptions,
+    inputPath: 'http://localhost:8081/some_model.glb',
     outputPath: './some_image.jpg',
     formatExtension: 'jpeg',
     backgroundColor: 'rgba(255, 0, 255, 1)',
   });
+});
+
+test('copies glb to server folder', async () => {
+  const argv = getArgv();
+  await expect(prepareAppOptions({...defaultArgs, argv}));
+
+  expect(fileHandler.addFile).toBeCalledTimes(1);
+  expect(fileHandler.addFile).toHaveBeenCalledWith(argv.input);
 });
 
 test('handles model viewer attributes', async () => {
@@ -111,6 +119,7 @@ test('handles model viewer attributes', async () => {
   });
   await expect(prepareAppOptions({...defaultArgs, argv})).resolves.toEqual({
     ...defaultPreparedOptions,
+    inputPath: 'http://localhost:8081/some_model.glb',
     modelViewerArgs: {
       'camera-orbit': '45deg 55deg 2.5m',
       exposure: '10',
@@ -125,6 +134,7 @@ test('handles model viewer version', async () => {
 
   await expect(prepareAppOptions({...defaultArgs, argv})).resolves.toEqual({
     ...defaultPreparedOptions,
+    inputPath: 'http://localhost:8081/some_model.glb',
     modelViewerUrl:
       'https://cdn.shopify.com/shopifycloud/model-viewer/v1.10/model-viewer.js',
   });
@@ -158,14 +168,18 @@ test('errors if local model viewer path + version are passed', async () => {
 });
 
 test('handles local model viewer path for model viewer', async () => {
+  const modelViewerPath = './model-viewer.js';
   const argv = getArgv({
-    model_viewer_path: './model-viewer.js',
+    model_viewer_path: modelViewerPath,
   });
 
   await expect(prepareAppOptions({...defaultArgs, argv})).resolves.toEqual({
     ...defaultPreparedOptions,
+    inputPath: 'http://localhost:8081/some_model.glb',
     modelViewerUrl: 'http://localhost:8081/model-viewer.js',
   });
 
-  expect(copyFile).toBeCalledTimes(1);
+  expect(fileHandler.addFile).toBeCalledTimes(2);
+  expect(fileHandler.addFile).toHaveBeenCalledWith(argv.input);
+  expect(fileHandler.addFile).toHaveBeenCalledWith(modelViewerPath);
 });
