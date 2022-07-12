@@ -1,4 +1,3 @@
-import {copyFile as copyFileNode} from 'fs';
 import path from 'path';
 
 import {parseOutputPathAndFormat} from './parse-output-path-and-format';
@@ -7,6 +6,7 @@ import {CaptureScreenShotOptions} from './types/CaptureScreenshotOptions';
 import {getModelViewerUrl} from './get-model-viewer-url';
 import {checkFileExistsAtUrl} from './check-file-exists-at-url';
 import {getLocalUrl} from './get-local-url';
+import {FileHandler} from './file-handler';
 
 export interface Argv {
   input: string;
@@ -25,27 +25,14 @@ export interface Argv {
 
 export interface PrepareAppOptionsArgs {
   localServerPort: number;
-  localServerPath: string;
+  fileHandler: FileHandler;
   argv: Argv;
   debug?: boolean;
 }
 
-function copyFile(src: string, dest: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    copyFileNode(src, dest, (error) => {
-      if (error) {
-        reject(error);
-        return;
-      }
-
-      resolve();
-    });
-  });
-}
-
 export async function prepareAppOptions({
-  localServerPath,
   localServerPort,
+  fileHandler,
   debug,
   argv,
 }: PrepareAppOptionsArgs): Promise<CaptureScreenShotOptions> {
@@ -62,9 +49,10 @@ export async function prepareAppOptions({
     model_viewer_version: modelViewerVersion,
     model_viewer_path: modelViewerPath,
   } = argv;
+  const model3dFileName = await fileHandler.addFile(input);
   const inputPath = getLocalUrl({
     port: localServerPort,
-    fileName: path.basename(input),
+    fileName: model3dFileName,
   });
   const [outputPath, format, formatExtension] = parseOutputPathAndFormat(
     output,
@@ -92,13 +80,11 @@ export async function prepareAppOptions({
   let modelViewerUrl: string = getModelViewerUrl(modelViewerVersion);
 
   if (modelViewerPath) {
-    await copyFile(
-      path.resolve(modelViewerPath),
-      path.join(localServerPath, 'model-viewer.js'),
-    );
+    const modelViewerFileName = await fileHandler.addFile(modelViewerPath);
+
     modelViewerUrl = getLocalUrl({
       port: localServerPort,
-      fileName: 'model-viewer.js',
+      fileName: modelViewerFileName,
     });
   }
 

@@ -4,6 +4,7 @@ import path from 'path';
 import yargs from 'yargs/yargs';
 
 import {FileServer} from './file-server';
+import {FileHandler} from './file-handler';
 import {prepareAppOptions} from './prepare-app-options';
 import {captureScreenshot} from './capture-screenshot';
 import {
@@ -101,12 +102,13 @@ const argv = yargs(process.argv.slice(2)).options({
 (async () => {
   async function closeProgram() {
     await localServer.stop();
+    await fileHandler.destroy();
 
     process.exit(processStatus);
   }
 
-  const localServerPath = path.dirname(argv.input);
-  const localServer = new FileServer(localServerPath);
+  const fileHandler = new FileHandler();
+  const localServer = new FileServer(fileHandler.fileDirectory);
   let options: CaptureScreenShotOptions;
   let processStatus = 0;
 
@@ -115,7 +117,7 @@ const argv = yargs(process.argv.slice(2)).options({
   try {
     options = await prepareAppOptions({
       localServerPort: localServer.port,
-      localServerPath,
+      fileHandler,
       argv,
     });
   } catch (error) {
