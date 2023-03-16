@@ -1,12 +1,14 @@
-import path from 'path';
-
-import {parseOutputPathAndFormat} from './parse-output-path-and-format';
-import {colors} from './colors';
 import {CaptureScreenShotOptions} from './types/CaptureScreenshotOptions';
 import {getModelViewerUrl} from './get-model-viewer-url';
 import {checkFileExistsAtUrl} from './check-file-exists-at-url';
 import {getLocalUrl} from './get-local-url';
 import {FileHandler} from './file-handler';
+import {AttributesObject} from './html-template';
+import {backgroundColors as parseBackgroundColors} from './prepare-app-options/background-color';
+import {inputUrls as parseInputUrls} from './prepare-app-options/input-urls';
+import {outputPaths as parseOutputPaths} from './prepare-app-options/output-paths';
+import {modelViewerAttributes} from './prepare-app-options/model-viewer-attributes';
+import {handleMultiples} from './prepare-app-options/handle-multiples';
 
 export interface Argv {
   input: string;
@@ -44,43 +46,40 @@ export async function prepareAppOptions({
     timeout,
     height,
     width,
-    color: backgroundColor,
+    color,
     model_viewer_attributes,
-    model_viewer_version: modelViewerVersion,
-    model_viewer_path: modelViewerPath,
+    model_viewer_version,
+    model_viewer_path,
   } = argv;
-  const model3dFileName = await fileHandler.addFile(input);
-  const inputPath = getLocalUrl({
-    port: localServerPort,
-    fileName: model3dFileName,
-  });
-  const [outputPath, format, formatExtension] = parseOutputPathAndFormat(
+  const inputUrls = await parseInputUrls(fileHandler, input, localServerPort);
+
+  const {outputPaths, format, formatExtension} = parseOutputPaths(
     output,
     image_format,
   );
-  const defaultBackgroundColor =
-    format === 'image/jpeg' ? colors.white : colors.transparent;
-  let modelViewerArgs: {[key: string]: string} = undefined;
 
-  if (model_viewer_attributes) {
-    modelViewerArgs = {};
+  const backgroundColors = parseBackgroundColors(format, color);
+  const modelViewerArgs: AttributesObject[] = modelViewerAttributes(
+    model_viewer_attributes,
+  );
 
-    const params = new URLSearchParams(model_viewer_attributes);
-    params.forEach((value, key) => {
-      modelViewerArgs[key] = value;
-    });
-  }
+  handleMultiples({
+    inputUrls,
+    outputPaths,
+    backgroundColors,
+    modelViewerArgs,
+  });
 
-  if (modelViewerVersion && modelViewerPath) {
+  if (model_viewer_version && model_viewer_path) {
     throw new Error(
       'Please pass only Model Viewer Version or Model Viewer Path not both',
     );
   }
 
-  let modelViewerUrl: string = getModelViewerUrl(modelViewerVersion);
+  let modelViewerUrl: string = getModelViewerUrl(model_viewer_version);
 
-  if (modelViewerPath) {
-    const modelViewerFileName = await fileHandler.addFile(modelViewerPath);
+  if (model_viewer_path) {
+    const modelViewerFileName = await fileHandler.addFile(model_viewer_path);
 
     modelViewerUrl = getLocalUrl({
       port: localServerPort,
@@ -92,22 +91,22 @@ export async function prepareAppOptions({
 
   if (!modelViewerUrlExists) {
     throw new Error(
-      `Unfortunately Model Viewer ${modelViewerVersion} cannot be used to render a screenshot`,
+      `Unfortunately Model Viewer ${model_viewer_version} cannot be used to render a screenshot`,
     );
   }
 
   return {
     modelViewerUrl,
-    backgroundColor: backgroundColor || defaultBackgroundColor,
+    inputUrls,
+    outputPaths,
+    backgroundColors,
+    modelViewerArgs,
     quality,
     timeout,
     height,
     width,
     debug,
-    inputPath,
-    outputPath,
     formatExtension,
-    modelViewerArgs,
     devicePixelRatio: 1,
   };
 }

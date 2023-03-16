@@ -1,6 +1,4 @@
-import {getModelViewerUrl} from './get-model-viewer-url';
-
-type AttributesObject = {[key: string]: any};
+export type AttributesObject = {[key: string]: any};
 
 export interface TemplateRenderOptions {
   modelViewerUrl: string;

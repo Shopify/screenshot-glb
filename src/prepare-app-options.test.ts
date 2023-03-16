@@ -17,12 +17,13 @@ const defaultArgs = {
 };
 
 const defaultPreparedOptions: CaptureScreenShotOptions = {
-  backgroundColor: 'rgba(255, 255, 255, 0)',
+  inputUrls: ['./some-glb/some_model.glb'],
+  outputPaths: ['./some_image.png'],
+  backgroundColors: ['rgba(255, 255, 255, 0)'],
+  modelViewerArgs: [],
   debug: false,
   width: 1024,
   height: 1024,
-  inputPath: './some-glb/some_model.glb',
-  outputPath: './some_image.png',
   quality: 0.92,
   timeout: 10000,
   modelViewerUrl:
@@ -65,8 +66,8 @@ test('handles args', async () => {
 
   await expect(prepareAppOptions({...defaultArgs, argv})).resolves.toEqual({
     ...defaultPreparedOptions,
-    inputPath: 'http://localhost:8081/some_model.glb',
-    backgroundColor: 'rgba(255, 0, 255, 0)',
+    inputUrls: ['http://localhost:8081/some_model.glb'],
+    backgroundColors: ['rgba(255, 0, 255, 0)'],
     width: 2048,
     height: 2048,
     quality: 1,
@@ -82,10 +83,10 @@ test('handles jpg format', async () => {
 
   await expect(prepareAppOptions({...defaultArgs, argv})).resolves.toEqual({
     ...defaultPreparedOptions,
-    inputPath: 'http://localhost:8081/some_model.glb',
-    outputPath: './some_image.jpg',
+    inputUrls: ['http://localhost:8081/some_model.glb'],
+    outputPaths: ['./some_image.jpg'],
+    backgroundColors: ['rgba(255, 255, 255, 1)'],
     formatExtension: 'jpeg',
-    backgroundColor: 'rgba(255, 255, 255, 1)',
   });
 });
 
@@ -98,10 +99,10 @@ test('handles jpg with color override', async () => {
 
   await expect(prepareAppOptions({...defaultArgs, argv})).resolves.toEqual({
     ...defaultPreparedOptions,
-    inputPath: 'http://localhost:8081/some_model.glb',
-    outputPath: './some_image.jpg',
+    inputUrls: ['http://localhost:8081/some_model.glb'],
+    outputPaths: ['./some_image.jpg'],
+    backgroundColors: ['rgba(255, 0, 255, 1)'],
     formatExtension: 'jpeg',
-    backgroundColor: 'rgba(255, 0, 255, 1)',
   });
 });
 
@@ -119,11 +120,13 @@ test('handles model viewer attributes', async () => {
   });
   await expect(prepareAppOptions({...defaultArgs, argv})).resolves.toEqual({
     ...defaultPreparedOptions,
-    inputPath: 'http://localhost:8081/some_model.glb',
-    modelViewerArgs: {
-      'camera-orbit': '45deg 55deg 2.5m',
-      exposure: '10',
-    },
+    inputUrls: ['http://localhost:8081/some_model.glb'],
+    modelViewerArgs: [
+      {
+        'camera-orbit': '45deg 55deg 2.5m',
+        exposure: '10',
+      },
+    ],
   });
 });
 
@@ -134,7 +137,7 @@ test('handles model viewer version', async () => {
 
   await expect(prepareAppOptions({...defaultArgs, argv})).resolves.toEqual({
     ...defaultPreparedOptions,
-    inputPath: 'http://localhost:8081/some_model.glb',
+    inputUrls: ['http://localhost:8081/some_model.glb'],
     modelViewerUrl:
       'https://cdn.shopify.com/shopifycloud/model-viewer/v1.10/model-viewer.js',
   });
@@ -175,7 +178,7 @@ test('handles local model viewer path for model viewer', async () => {
 
   await expect(prepareAppOptions({...defaultArgs, argv})).resolves.toEqual({
     ...defaultPreparedOptions,
-    inputPath: 'http://localhost:8081/some_model.glb',
+    inputUrls: ['http://localhost:8081/some_model.glb'],
     modelViewerUrl: 'http://localhost:8081/model-viewer.js',
   });
 
