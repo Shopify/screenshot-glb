@@ -19,8 +19,10 @@ export class FileHandler {
 
   async addFile(filePath: string): Promise<string> {
     const fileName = path.basename(filePath);
+    const normalizedFilePath = path.normalize(filePath).replace(/^(\.\.(\/|\\|$))+/, '');
+
     await copyFile(
-      path.resolve(filePath),
+      path.resolve(normalizedFilePath),
       path.join(this._fileDirectory, fileName),
     );
     return fileName;
