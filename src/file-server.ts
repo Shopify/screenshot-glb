@@ -5,8 +5,10 @@ import {AddressInfo} from 'net';
 
 const createFileServer = (mountDirectory) => {
   return http.createServer((request, response) => {
-    const requestUrl = path.normalize(request.url).replace(/^(\.\.(\/|\\|$))+/, '');
-    const filePath = path.join(mountDirectory, requestUrl);
+    const normalizedFilePath = path
+      .normalize(request.url)
+      .replace(/^(\.\.(\/|\\|$))+/, '');
+    const filePath = path.join(mountDirectory, normalizedFilePath);
     const extname = String(path.extname(filePath)).toLowerCase();
     const mimeTypes = {
       '.glb': 'application/gltf-binary',
