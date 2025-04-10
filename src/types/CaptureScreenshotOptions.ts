@@ -1,14 +1,7 @@
-import {AttributesObject, TemplateRenderOptions} from '../html-template';
+import {TemplateRenderOptions} from '../html-template';
 
-export interface CaptureScreenShotOptions
-  extends Omit<
-    TemplateRenderOptions,
-    'inputPath' | 'backgroundColor' | 'modelViewerArgs' | 'backgroundColor'
-  > {
-  inputUrls: string[];
-  outputPaths: string[];
-  backgroundColors: string[];
-  modelViewerArgs: AttributesObject[];
+export interface CaptureScreenShotOptions extends TemplateRenderOptions {
+  outputPath: string;
   debug: boolean;
   quality: number;
   timeout: number;

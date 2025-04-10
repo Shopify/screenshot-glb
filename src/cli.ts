@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import path from 'path';
 import yargs from 'yargs/yargs';
 
 import {FileServer} from './file-server';
