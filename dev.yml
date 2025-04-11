@@ -6,7 +6,7 @@ type: node
 up:
   - isogun
   - node:
-      version: v16.13.0
+      version: v20.19.0
       yarn: true
       packages:
         - .
