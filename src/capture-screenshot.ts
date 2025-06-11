@@ -142,7 +142,7 @@ export async function captureScreenshot(options: CaptureScreenShotOptions) {
   const captureOptions = {
     quality: quality * 100.0,
     type: formatExtension as 'jpeg' | 'png' | 'webp',
-    path: outputPath,
+    path: outputPath as `${string}.jpeg` | `${string}.png` | `${string}.webp`,
     omitBackground: true,
   };
 
