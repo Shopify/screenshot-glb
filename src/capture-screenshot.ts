@@ -27,6 +27,7 @@ export async function captureScreenshot(options: CaptureScreenShotOptions) {
   const args = [
     '--no-sandbox',
     '--disable-gpu',
+    '--enable-unsafe-swiftshader',
     '--disable-dev-shm-usage',
     '--disable-setuid-sandbox',
     '--no-zygote',
