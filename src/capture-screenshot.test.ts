@@ -89,6 +89,7 @@ describe('captureScreenshot', () => {
       args: [
         '--no-sandbox',
         '--disable-gpu',
+        '--enable-unsafe-swiftshader',
         '--disable-dev-shm-usage',
         '--disable-setuid-sandbox',
         '--no-zygote',
@@ -113,6 +114,7 @@ describe('captureScreenshot', () => {
       args: [
         '--no-sandbox',
         '--disable-gpu',
+        '--enable-unsafe-swiftshader',
         '--disable-dev-shm-usage',
         '--disable-setuid-sandbox',
         '--no-zygote',
