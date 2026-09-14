@@ -27,3 +27,6 @@ jobs:
       - run: yarn install --frozen-lockfile
       - run: yarn build
       - run: yarn test
+      # GitHub's Ubuntu AppArmor policy blocks Chromium's user-namespace sandbox.
+      # This smoke renders only repository-owned fixtures on an isolated runner.
+      - run: yarn test:smoke --disable_chromium_sandbox

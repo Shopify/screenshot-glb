@@ -19,6 +19,7 @@ const defaultArgs = {
 const defaultPreparedOptions: CaptureScreenShotOptions = {
   backgroundColor: 'rgba(255, 255, 255, 0)',
   debug: false,
+  disableChromiumSandbox: false,
   width: 1024,
   height: 1024,
   inputPath: './some-glb/some_model.glb',
@@ -71,6 +72,18 @@ test('handles args', async () => {
     height: 2048,
     quality: 1,
     timeout: 2000,
+  });
+});
+
+test('handles an explicit Chromium sandbox opt-out', async () => {
+  const argv = getArgv({
+    disable_chromium_sandbox: true,
+  });
+
+  await expect(prepareAppOptions({...defaultArgs, argv})).resolves.toEqual({
+    ...defaultPreparedOptions,
+    inputPath: 'http://localhost:8081/some_model.glb',
+    disableChromiumSandbox: true,
   });
 });
 

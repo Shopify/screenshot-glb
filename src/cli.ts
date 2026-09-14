@@ -15,6 +15,7 @@ import {
   DEFAULT_TIMEOUT_MILLISECONDS,
   DEFAULT_DEBUG,
   DEFAULT_VERBOSE_LOGGING,
+  DEFAULT_DISABLE_CHROMIUM_SANDBOX,
 } from './defaults';
 import {logError, logUnhandledError} from './log-error';
 import {CaptureScreenShotOptions} from './types/CaptureScreenshotOptions';
@@ -79,6 +80,12 @@ const argv = yargs(process.argv.slice(2)).options({
     alias: 'v',
     describe: 'Enable verbose logging',
     default: DEFAULT_VERBOSE_LOGGING,
+  },
+  disable_chromium_sandbox: {
+    type: 'boolean',
+    describe:
+      "SECURITY WARNING: Disable Chromium's process sandbox (fully trusted content in isolated environments only)",
+    default: DEFAULT_DISABLE_CHROMIUM_SANDBOX,
   },
   model_viewer_path: {
     type: 'string',

@@ -29,11 +29,19 @@ Options:
                  Pass <model-viewer> attributes as a URL search param string
   -q, --image_quality
                  Change the image quality of the rendered JPG default 0.92
+  --disable_chromium_sandbox
+                 Disable Chromium's sandbox for trusted, isolated environments
 ```
 
 ## Dependencies
 
 The module relies on using [puppeteer](https://www.npmjs.com/package/puppeteer) to spawn a headless instance of Chrome to render Google's [<model-viewer>](https://github.com/GoogleWebComponents/model-viewer) web component with the GLB model loaded.
+
+## Chromium, SwiftShader, and sandboxing
+
+`screenshot-glb` uses Chromium's [documented SwANGLE driver configuration](https://chromium.googlesource.com/chromium/src/+/main/docs/gpu/swiftshader.md) (`--use-gl=angle --use-angle=swiftshader`) so WebGL remains available on supported GPU-less machines without opting into the deprecated unsafe WebGL fallback. It verifies that Chromium can create a WebGL context before loading a model and exits nonzero with setup guidance when no context is available.
+
+Chromium's sandbox and normal multiprocess isolation are enabled by default. Only use `--disable_chromium_sandbox` when all rendered content is trusted and the surrounding runtime supplies equivalent isolation; the option lowers Chromium's security guarantees.
 
 ## Development
 
@@ -43,6 +51,7 @@ For Shopify Employees
 - `yarn link`
 - You may need to need to do `chmod 755 dist/cli.js` to allow for execution
 - `screenshot-glb -i <PATH_TO_MODEL> -o <PATH_TO_OUTPUT_IMAGE>`
+- `yarn test:smoke` renders the tracked Astronaut fixture with the tracked Model Viewer build and verifies a complete JPEG. Run this before debugging an end-to-end upload.
 
 Outside Development
 

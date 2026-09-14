@@ -15,9 +15,9 @@ jest.mock('perf_hooks', () => {
 jest.mock('puppeteer', () => {
   const page = {
     on: jest.fn(),
-    setContent: jest.fn().mockResolvedValue(undefined),
-    evaluate: jest.fn().mockResolvedValue(undefined),
-    screenshot: jest.fn().mockResolvedValue(undefined),
+    setContent: jest.fn(),
+    evaluate: jest.fn(),
+    screenshot: jest.fn(),
   };
 
   const browser = {
@@ -39,6 +39,7 @@ describe('captureScreenshot', () => {
   const inputPath = 'some/model.glb';
   const outputPath = 'some/image.jpeg';
   const debug = false;
+  const disableChromiumSandbox = false;
   const quality = 1;
   const timeout = 60000;
   const width = 1024;
@@ -51,6 +52,7 @@ describe('captureScreenshot', () => {
     inputPath,
     outputPath,
     debug,
+    disableChromiumSandbox,
     quality,
     timeout,
     width,
@@ -61,8 +63,8 @@ describe('captureScreenshot', () => {
   };
   const htmlContent = '<div>some html</div>';
   let originalConsoleLog: typeof console.log;
-  let mockPage;
-  let mockBrowser;
+  let mockPage: Page;
+  let mockBrowser: Browser;
 
   beforeEach(() => {
     originalConsoleLog = console.log;
@@ -70,6 +72,15 @@ describe('captureScreenshot', () => {
 
     mockPage = jest.requireMock('puppeteer').mock.page as Page;
     mockBrowser = jest.requireMock('puppeteer').mock.browser as Browser;
+
+    (mockPage.on as jest.Mock).mockReset();
+    (mockPage.setContent as jest.Mock).mockReset().mockResolvedValue(undefined);
+    (mockPage.evaluate as jest.Mock)
+      .mockReset()
+      .mockResolvedValueOnce('ANGLE SwiftShader')
+      .mockResolvedValueOnce(undefined);
+    (mockPage.screenshot as jest.Mock).mockReset().mockResolvedValue(undefined);
+    (mockBrowser.close as jest.Mock).mockReset().mockResolvedValue(undefined);
 
     (htmlTemplate as jest.Mock).mockReturnValue(htmlContent);
     (performance.now as jest.Mock).mockReturnValue(0);
@@ -80,30 +91,48 @@ describe('captureScreenshot', () => {
     jest.clearAllMocks();
   });
 
-  test('calls with correct args', async () => {
-    await captureScreenshot({
-      ...defaultParams,
-    });
+  test('launches with sandboxed SwiftShader defaults', async () => {
+    await captureScreenshot({...defaultParams});
 
     expect(puppeteer.launch).toHaveBeenCalledWith({
       args: [
-        '--no-sandbox',
-        '--disable-gpu',
+        '--use-gl=angle',
+        '--use-angle=swiftshader',
         '--disable-dev-shm-usage',
-        '--disable-setuid-sandbox',
-        '--no-zygote',
-        '--single-process',
       ],
       defaultViewport: {
         width,
         height,
         deviceScaleFactor: devicePixelRatio,
       },
-      headless: !debug,
+      headless: true,
     });
   });
 
-  test('calls with correct args in debug', async () => {
+  test('can explicitly disable the Chromium sandbox', async () => {
+    await captureScreenshot({
+      ...defaultParams,
+      disableChromiumSandbox: true,
+    });
+
+    expect(puppeteer.launch).toHaveBeenCalledWith({
+      args: [
+        '--use-gl=angle',
+        '--use-angle=swiftshader',
+        '--disable-dev-shm-usage',
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+      ],
+      defaultViewport: {
+        width,
+        height,
+        deviceScaleFactor: devicePixelRatio,
+      },
+      headless: true,
+    });
+  });
+
+  test('starts maximized in debug mode', async () => {
     await captureScreenshot({
       ...defaultParams,
       debug: true,
@@ -111,11 +140,9 @@ describe('captureScreenshot', () => {
 
     expect(puppeteer.launch).toHaveBeenCalledWith({
       args: [
-        '--no-sandbox',
-        '--disable-gpu',
+        '--use-gl=angle',
+        '--use-angle=swiftshader',
         '--disable-dev-shm-usage',
-        '--disable-setuid-sandbox',
-        '--no-zygote',
         '--start-maximized',
       ],
       defaultViewport: {
@@ -127,17 +154,17 @@ describe('captureScreenshot', () => {
     });
   });
 
-  test('calls setContent', async () => {
-    await captureScreenshot({
-      ...defaultParams,
-    });
+  test('loads the model viewer after checking WebGL', async () => {
+    await captureScreenshot({...defaultParams});
 
+    expect(mockPage.evaluate).toHaveBeenCalledTimes(2);
+    expect(mockPage.evaluate).toHaveBeenNthCalledWith(1, expect.any(Function));
     expect(mockPage.setContent).toHaveBeenCalledWith(htmlContent, {
       waitUntil: ['domcontentloaded', 'networkidle0'],
     });
   });
 
-  test('logs out correctly', async () => {
+  test('logs timing information', async () => {
     const expectedLogs = [
       '🚀  Launched browser (0.00s)',
       '🗺  Loading template to DOMContentLoaded (0.00s)',
@@ -145,44 +172,60 @@ describe('captureScreenshot', () => {
       '🖼  Captured screenshot (0.00s)',
     ];
 
-    await captureScreenshot({
-      ...defaultParams,
-    });
+    await captureScreenshot({...defaultParams});
 
     expect(console.log).toHaveBeenCalledTimes(expectedLogs.length);
-    expectedLogs.forEach((log, i) => {
-      expect(console.log).toHaveBeenNthCalledWith(i + 1, log);
+    expectedLogs.forEach((log, index) => {
+      expect(console.log).toHaveBeenNthCalledWith(index + 1, log);
     });
   });
 
-  test('handles evaluate error', async () => {
-    const error = new Error('some error');
-    const expectedLogs = [
-      '🚀  Launched browser (0.00s)',
-      '🗺  Loading template to DOMContentLoaded (0.00s)',
-      '🖌  Rendering screenshot of model (0.00s)',
-      `❌  Evaluate error: ${error}`,
-    ];
+  test('fails immediately when WebGL is unavailable', async () => {
+    (mockPage.evaluate as jest.Mock).mockReset().mockResolvedValue(null);
 
-    mockPage.evaluate.mockResolvedValue(error);
+    await expect(captureScreenshot({...defaultParams})).rejects.toThrow(
+      'Unable to create a WebGL context. Chromium was launched with the supported ANGLE SwiftShader driver (--use-gl=angle --use-angle=swiftshader). Verify that Chrome for Testing includes SwiftShader and can start with the configured sandbox.',
+    );
 
-    await captureScreenshot({
-      ...defaultParams,
-    });
-
-    expect(console.log).toHaveBeenCalledTimes(expectedLogs.length);
-    expectedLogs.forEach((log, i) => {
-      expect(console.log).toHaveBeenNthCalledWith(i + 1, log);
-    });
+    expect(mockPage.setContent).not.toHaveBeenCalled();
     expect(mockPage.screenshot).not.toHaveBeenCalled();
-
-    mockPage.evaluate.mockResolvedValue(undefined);
+    expect(mockBrowser.close).toHaveBeenCalledTimes(1);
   });
 
-  test('adds correct listeners to page', async () => {
-    await captureScreenshot({
-      ...defaultParams,
-    });
+  test('fails when the model does not finish rendering', async () => {
+    (mockPage.evaluate as jest.Mock)
+      .mockReset()
+      .mockResolvedValueOnce('ANGLE SwiftShader')
+      .mockResolvedValueOnce('Stop capturing screenshot after 60 seconds');
+
+    await expect(captureScreenshot({...defaultParams})).rejects.toThrow(
+      'Model rendering failed: Stop capturing screenshot after 60 seconds',
+    );
+
+    expect(mockPage.screenshot).not.toHaveBeenCalled();
+    expect(mockBrowser.close).toHaveBeenCalledTimes(1);
+  });
+
+  test('closes the browser when page setup fails', async () => {
+    (mockPage.setContent as jest.Mock).mockRejectedValue(
+      new Error('page setup failed'),
+    );
+
+    await expect(captureScreenshot({...defaultParams})).rejects.toThrow(
+      'page setup failed',
+    );
+
+    expect(mockBrowser.close).toHaveBeenCalledTimes(1);
+  });
+
+  test('closes the browser after a successful screenshot', async () => {
+    await captureScreenshot({...defaultParams});
+
+    expect(mockBrowser.close).toHaveBeenCalledTimes(1);
+  });
+
+  test('adds page error and console listeners', async () => {
+    await captureScreenshot({...defaultParams});
 
     const on = mockPage.on as jest.Mock;
     expect(on).toHaveBeenCalledTimes(2);
@@ -190,9 +233,9 @@ describe('captureScreenshot', () => {
     expect(on.mock.calls[1][0]).toBe('console');
   });
 
-  test('handles page error', async () => {
+  test('logs page errors', async () => {
     const error = new Error('some error');
-    let errorCallback;
+    let errorCallback: (error: Error) => void;
 
     (mockPage.on as jest.Mock).mockImplementation(
       (event: string, callback: (error: Error) => void) => {
@@ -200,9 +243,7 @@ describe('captureScreenshot', () => {
       },
     );
 
-    await captureScreenshot({
-      ...defaultParams,
-    });
+    await captureScreenshot({...defaultParams});
 
     errorCallback(error);
 

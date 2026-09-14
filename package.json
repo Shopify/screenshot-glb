@@ -14,6 +14,7 @@
     "lint": "prettier --check ./src",
     "lint:fix": "prettier --write ./src",
     "test": "jest",
+    "test:smoke": "yarn build && ./test/scripts/smoke_test.sh",
     "dev": "yarn build && node dist/cli.js -i ./test/fixtures/WaterBottle.glb -o output.jpg -w 1024 -h 2048 -q 1.00 -v -t 30000 -m \"exposure=0.92&camera-orbit=88.59deg 59.01deg 0.24m&camera-target=0.06m 0.04m 0m&environment-image=neutral\"",
     "dev:version": "yarn build && node dist/cli.js -i ./test/fixtures/WaterBottle.glb -o output.jpg -@ 1.9 -w 1024 -h 2048 -q 1.00 -v -t 30000 -m \"exposure=0.92&camera-orbit=88.59deg 59.01deg 0.24m&camera-target=0.06m 0.04m 0m&environment-image=neutral\"",
     "dev:no-version": "yarn build && node dist/cli.js -i ./test/fixtures/WaterBottle.glb -o output.jpg -@ 100000.0 -w 1024 -h 2048 -q 1.00 -v -t 30000 -m \"exposure=0.92&camera-orbit=88.59deg 59.01deg 0.24m&camera-target=0.06m 0.04m 0m&environment-image=neutral\"",
