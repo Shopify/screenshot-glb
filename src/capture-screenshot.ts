@@ -25,17 +25,16 @@ export async function captureScreenshot(options: CaptureScreenShotOptions) {
   const screenshotTimeoutInSec = timeout / 1000;
 
   const headless = !debug;
-  const args = ['--no-sandbox'];
+  const args = [
+    '--no-sandbox',
+    '--disable-dev-shm-usage',
+    '--disable-setuid-sandbox',
+    '--no-zygote',
+  ];
 
   if (!enableGpu) {
     args.push('--disable-gpu');
   }
-
-  args.push(
-    '--disable-dev-shm-usage',
-    '--disable-setuid-sandbox',
-    '--no-zygote',
-  );
 
   if (headless) {
     args.push('--single-process');

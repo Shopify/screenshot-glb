@@ -90,10 +90,10 @@ describe('captureScreenshot', () => {
     expect(puppeteer.launch).toHaveBeenCalledWith({
       args: [
         '--no-sandbox',
-        '--disable-gpu',
         '--disable-dev-shm-usage',
         '--disable-setuid-sandbox',
         '--no-zygote',
+        '--disable-gpu',
         '--single-process',
       ],
       defaultViewport: {
@@ -114,10 +114,10 @@ describe('captureScreenshot', () => {
     expect(puppeteer.launch).toHaveBeenCalledWith({
       args: [
         '--no-sandbox',
-        '--disable-gpu',
         '--disable-dev-shm-usage',
         '--disable-setuid-sandbox',
         '--no-zygote',
+        '--disable-gpu',
         '--start-maximized',
       ],
       defaultViewport: {
