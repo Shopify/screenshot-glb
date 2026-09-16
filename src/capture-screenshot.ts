@@ -16,6 +16,7 @@ export async function captureScreenshot(options: CaptureScreenShotOptions) {
     height,
     outputPath,
     debug,
+    enableGpu,
     quality,
     timeout,
     devicePixelRatio,
@@ -26,11 +27,14 @@ export async function captureScreenshot(options: CaptureScreenShotOptions) {
   const headless = !debug;
   const args = [
     '--no-sandbox',
-    '--disable-gpu',
     '--disable-dev-shm-usage',
     '--disable-setuid-sandbox',
     '--no-zygote',
   ];
+
+  if (!enableGpu) {
+    args.push('--disable-gpu');
+  }
 
   if (headless) {
     args.push('--single-process');

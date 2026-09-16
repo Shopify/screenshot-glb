@@ -39,6 +39,7 @@ describe('captureScreenshot', () => {
   const inputPath = 'some/model.glb';
   const outputPath = 'some/image.jpeg';
   const debug = false;
+  const enableGpu = false;
   const quality = 1;
   const timeout = 60000;
   const width = 1024;
@@ -51,6 +52,7 @@ describe('captureScreenshot', () => {
     inputPath,
     outputPath,
     debug,
+    enableGpu,
     quality,
     timeout,
     width,
@@ -88,10 +90,10 @@ describe('captureScreenshot', () => {
     expect(puppeteer.launch).toHaveBeenCalledWith({
       args: [
         '--no-sandbox',
-        '--disable-gpu',
         '--disable-dev-shm-usage',
         '--disable-setuid-sandbox',
         '--no-zygote',
+        '--disable-gpu',
         '--single-process',
       ],
       defaultViewport: {
@@ -112,10 +114,10 @@ describe('captureScreenshot', () => {
     expect(puppeteer.launch).toHaveBeenCalledWith({
       args: [
         '--no-sandbox',
-        '--disable-gpu',
         '--disable-dev-shm-usage',
         '--disable-setuid-sandbox',
         '--no-zygote',
+        '--disable-gpu',
         '--start-maximized',
       ],
       defaultViewport: {
@@ -124,6 +126,29 @@ describe('captureScreenshot', () => {
         deviceScaleFactor: devicePixelRatio,
       },
       headless: false,
+    });
+  });
+
+  test('omits the disable GPU argument when GPU acceleration is enabled', async () => {
+    await captureScreenshot({
+      ...defaultParams,
+      enableGpu: true,
+    });
+
+    expect(puppeteer.launch).toHaveBeenCalledWith({
+      args: [
+        '--no-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-setuid-sandbox',
+        '--no-zygote',
+        '--single-process',
+      ],
+      defaultViewport: {
+        width,
+        height,
+        deviceScaleFactor: devicePixelRatio,
+      },
+      headless: !debug,
     });
   });
 

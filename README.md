@@ -23,6 +23,8 @@ Options:
   -w, --width    Output image width
   -h, --height   Output image height
   -c, --color    Change the background color of the rendered image
+      --enable_gpu
+                 Allow GPU acceleration by omitting Chrome's --disable-gpu argument
   -@, --model_viewer_version
                  Pass the version of Model Viewer which should be used .eg 1.9
   -m, --model_viewer_attributes
@@ -64,6 +66,9 @@ $ screenshot-glb -i <PATH_TO_MODEL> -o <PATH_TO_OUTPUT_IMAGE> -m "environment-im
 
 // Use a specific version of Model Viewer to create the screenshot
 $ screenshot-glb -i <PATH_TO_MODEL> -o <PATH_TO_OUTPUT_IMAGE> -@ 1.9
+
+// Allow GPU acceleration (for example, when WebGL is unavailable on macOS)
+$ screenshot-glb -i <PATH_TO_MODEL> -o <PATH_TO_OUTPUT_IMAGE> --enable_gpu
 ```
 
 ### Linux

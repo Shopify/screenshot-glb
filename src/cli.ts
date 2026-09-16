@@ -74,6 +74,12 @@ const argv = yargs(process.argv.slice(2)).options({
     describe: 'Enable Debug Mode',
     default: DEFAULT_DEBUG,
   },
+  enable_gpu: {
+    type: 'boolean',
+    describe:
+      'Allow GPU acceleration by omitting the Chrome --disable-gpu argument',
+    default: false,
+  },
   verbose: {
     type: 'boolean',
     alias: 'v',
