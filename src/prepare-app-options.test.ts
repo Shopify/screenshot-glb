@@ -19,6 +19,7 @@ const defaultArgs = {
 const defaultPreparedOptions: CaptureScreenShotOptions = {
   backgroundColor: 'rgba(255, 255, 255, 0)',
   debug: false,
+  enableGpu: false,
   width: 1024,
   height: 1024,
   inputPath: './some-glb/some_model.glb',
@@ -71,6 +72,16 @@ test('handles args', async () => {
     height: 2048,
     quality: 1,
     timeout: 2000,
+  });
+});
+
+test('enables GPU acceleration', async () => {
+  const argv = getArgv({enable_gpu: true});
+
+  await expect(prepareAppOptions({...defaultArgs, argv})).resolves.toEqual({
+    ...defaultPreparedOptions,
+    inputPath: 'http://localhost:8081/some_model.glb',
+    enableGpu: true,
   });
 });
 

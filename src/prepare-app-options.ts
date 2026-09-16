@@ -12,6 +12,7 @@ export interface Argv {
   input: string;
   output: string;
   debug?: boolean;
+  enable_gpu?: boolean;
   image_format: string;
   image_quality: number;
   timeout: number;
@@ -45,6 +46,7 @@ export async function prepareAppOptions({
     height,
     width,
     color: backgroundColor,
+    enable_gpu: enableGpu = false,
     model_viewer_attributes,
     model_viewer_version: modelViewerVersion,
     model_viewer_path: modelViewerPath,
@@ -104,6 +106,7 @@ export async function prepareAppOptions({
     height,
     width,
     debug,
+    enableGpu,
     inputPath,
     outputPath,
     formatExtension,
