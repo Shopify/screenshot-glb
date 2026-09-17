@@ -6,7 +6,7 @@ Easily take screenshots and create thumbnail images for glTF 2.0 Binary (GLB) fi
 
 Use npm to install this tool:
 
-`npm install ---save @shopify/screenshot-glb`
+`npm install --save @shopify/screenshot-glb`
 
 ## Usage
 
@@ -43,7 +43,7 @@ For Shopify Employees
 
 - `dev up`
 - `yarn link`
-- You may need to need to do `chmod 755 dist/cli.js` to allow for execution
+- You may need to run `chmod 755 dist/cli.js` to allow execution
 - `screenshot-glb -i <PATH_TO_MODEL> -o <PATH_TO_OUTPUT_IMAGE>`
 
 Outside Development

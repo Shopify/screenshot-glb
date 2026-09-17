@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: Git tag to publish (for example, v4.2.0)
+        description: Git tag to publish (for example, v1.2.3)
         required: true
         type: string
 
@@ -33,7 +33,7 @@ jobs:
           fi
 
           if [[ ! "$release_tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "Expected a stable semantic-version tag such as v4.2.0; got '$release_tag'." >&2
+            echo "Expected a stable semantic-version tag such as v1.2.3; got '$release_tag'." >&2
             exit 1
           fi
 
@@ -64,10 +64,6 @@ jobs:
             echo "Tag $RELEASE_TAG does not match package version $package_version." >&2
             exit 1
           fi
-
-      # v4.2.0 was tagged before repository metadata was added to package.json.
-      - name: Normalize repository metadata
-        run: npm pkg set repository.type=git repository.url=https://github.com/Shopify/screenshot-glb
 
       - name: Publish
         run: npm publish --tag latest --access public
