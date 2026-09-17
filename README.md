@@ -6,7 +6,7 @@ Easily take screenshots and create thumbnail images for glTF 2.0 Binary (GLB) fi
 
 Use npm to install this tool:
 
-`npm install ---save @shopify/screenshot-glb`
+`npm install --save @shopify/screenshot-glb`
 
 ## Usage
 
@@ -43,7 +43,7 @@ For Shopify Employees
 
 - `dev up`
 - `yarn link`
-- You may need to need to do `chmod 755 dist/cli.js` to allow for execution
+- You may need to run `chmod 755 dist/cli.js` to allow execution
 - `screenshot-glb -i <PATH_TO_MODEL> -o <PATH_TO_OUTPUT_IMAGE>`
 
 Outside Development
@@ -51,6 +51,34 @@ Outside Development
 - `yarn install`
 - `yarn link`
 - `screenshot-glb -i <PATH_TO_MODEL> -o <PATH_TO_OUTPUT_IMAGE>`
+
+## Releasing
+
+Releases are published to npm by the [Publish to npm](https://github.com/Shopify/screenshot-glb/actions/workflows/publish.yml) GitHub Actions workflow using npm trusted publishing.
+
+1. Update the version in `package.json` and merge that change into `master`.
+2. Tag the merged commit with the matching version and push the tag. Replace `X.Y.Z` with the version from `package.json`:
+
+   ```sh
+   git switch master
+   git pull --ff-only
+   git tag -a vX.Y.Z -m "vX.Y.Z"
+   git push origin vX.Y.Z
+   ```
+
+3. Confirm that the **Publish to npm** workflow succeeded and that npm reports the new version:
+
+   ```sh
+   npm view @shopify/screenshot-glb@X.Y.Z version
+   ```
+
+4. Create a GitHub Release for the published tag with generated release notes:
+
+   ```sh
+   gh release create vX.Y.Z --verify-tag --title "vX.Y.Z" --generate-notes
+   ```
+
+Pushing the tag starts publishing automatically. Creating the GitHub Release documents the changes and does not publish the package again. To retry publishing an existing tag, run the workflow manually and provide that tag.
 
 ## Examples
 
