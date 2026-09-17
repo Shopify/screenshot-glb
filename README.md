@@ -52,6 +52,28 @@ Outside Development
 - `yarn link`
 - `screenshot-glb -i <PATH_TO_MODEL> -o <PATH_TO_OUTPUT_IMAGE>`
 
+## Releasing
+
+Releases are published to npm by the [Publish to npm](https://github.com/Shopify/screenshot-glb/actions/workflows/publish.yml) GitHub Actions workflow using npm trusted publishing.
+
+1. Update the version in `package.json` and merge that change into `master`.
+2. Tag the merged commit with the matching version and push the tag. Replace `X.Y.Z` with the version from `package.json`:
+
+   ```sh
+   git switch master
+   git pull --ff-only
+   git tag -a vX.Y.Z -m "vX.Y.Z"
+   git push origin vX.Y.Z
+   ```
+
+3. Confirm that the **Publish to npm** workflow succeeded and that npm reports the new version:
+
+   ```sh
+   npm view @shopify/screenshot-glb@X.Y.Z version
+   ```
+
+Pushing the tag starts publishing automatically. To retry publishing an existing tag, run the workflow manually and provide that tag.
+
 ## Examples
 
 ```
