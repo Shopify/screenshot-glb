@@ -72,7 +72,13 @@ Releases are published to npm by the [Publish to npm](https://github.com/Shopify
    npm view @shopify/screenshot-glb@X.Y.Z version
    ```
 
-Pushing the tag starts publishing automatically. To retry publishing an existing tag, run the workflow manually and provide that tag.
+4. Create a GitHub Release for the published tag with generated release notes:
+
+   ```sh
+   gh release create vX.Y.Z --verify-tag --title "vX.Y.Z" --generate-notes
+   ```
+
+Pushing the tag starts publishing automatically. Creating the GitHub Release documents the changes and does not publish the package again. To retry publishing an existing tag, run the workflow manually and provide that tag.
 
 ## Examples
 
