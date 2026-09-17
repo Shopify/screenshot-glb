@@ -1,0 +1,71 @@
+name: Publish to npm
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Git tag to publish (for example, v4.2.0)
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve release tag
+        id: release
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          DISPATCH_TAG: ${{ inputs.tag }}
+          PUSH_TAG: ${{ github.ref_name }}
+        run: |
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            release_tag="$DISPATCH_TAG"
+          else
+            release_tag="$PUSH_TAG"
+          fi
+
+          if [[ ! "$release_tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Expected a stable semantic-version tag such as v4.2.0; got '$release_tag'." >&2
+            exit 1
+          fi
+
+          echo "tag=$release_tag" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.release.outputs.tag }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.14.0'
+          registry-url: https://registry.npmjs.org
+          cache: yarn
+
+      - name: Update npm
+        run: npm install --global npm@latest
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Verify package version
+        env:
+          RELEASE_TAG: ${{ steps.release.outputs.tag }}
+        run: |
+          package_version="$(node --print "require('./package.json').version")"
+          if [[ "$RELEASE_TAG" != "v$package_version" ]]; then
+            echo "Tag $RELEASE_TAG does not match package version $package_version." >&2
+            exit 1
+          fi
+
+      - name: Publish
+        run: npm publish --tag latest --access public
+        env:
+          NPM_TOKEN: ''
