@@ -65,6 +65,10 @@ jobs:
             exit 1
           fi
 
+      # v4.2.0 was tagged before repository metadata was added to package.json.
+      - name: Normalize repository metadata
+        run: npm pkg set repository.type=git repository.url=https://github.com/Shopify/screenshot-glb
+
       - name: Publish
         run: npm publish --tag latest --access public
         env:
