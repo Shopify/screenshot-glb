@@ -52,6 +52,19 @@ describe('FileHandler', () => {
     );
   });
 
+  it('sanitizes filePath during add', () => {
+    fileHandler.addFile('../../../home/some-directory-traversal.glb');
+
+    expect(copyFile).toHaveBeenCalledTimes(1);
+    expect((copyFile as any as jest.Mock).mock.calls[0][0]).toEqual(
+      '/resolved/home/some-directory-traversal.glb',
+    );
+
+    expect((copyFile as any as jest.Mock).mock.calls[0][1]).toEqual(
+      '/os-tmp/screenshot-glb/tmp-folder/some-directory-traversal.glb',
+    );
+  });
+
   it('deletes temp folder on stop', () => {
     fileHandler.destroy();
 
