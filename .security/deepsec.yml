@@ -1,0 +1,12 @@
+# Standalone repository enrollment for devx deepsec.
+projects:
+  screenshot-glb:
+    priority:
+      [
+        src/cli.ts,
+        src/prepare-app-options.ts,
+        src/file-server.ts,
+        src/html-template.ts,
+        src/capture-screenshot.ts,
+      ]
+    ignore: ['src/__mocks__/**']

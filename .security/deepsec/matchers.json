@@ -1,0 +1,61 @@
+[
+  {
+    "version": 1,
+    "slug": "screenshot-glb-option-ingress",
+    "description": "Select CLI options and their conversion into staged files, custom HTML attributes, script selection, browser limits, and screenshot destinations. Establish whether a lower-trust service caller controls these arguments.",
+    "noiseTier": "normal",
+    "filePatterns": ["src/cli.ts", "src/prepare-app-options.ts"],
+    "patterns": [
+      {
+        "source": "yargs\\(process\\.argv|new URLSearchParams\\(model_viewer_attributes\\)|fileHandler\\.addFile\\(|parseOutputPathAndFormat\\(",
+        "flags": "m",
+        "label": "CLI and rendering-option trust boundary"
+      }
+    ],
+    "examples": [
+      "const argv = yargs(process.argv.slice(2)).options({",
+      "const params = new URLSearchParams(model_viewer_attributes);",
+      "const model3dFileName = await fileHandler.addFile(input);"
+    ],
+    "closesSurfaceIds": ["screenshot-glb-option-ingress"]
+  },
+  {
+    "version": 1,
+    "slug": "screenshot-glb-local-file-flow",
+    "description": "Select local file staging, cleanup, and output filename derivation that shared matchers miss or only cover noisily. Trace caller-controlled paths, basename collisions, recursive cleanup, and the output path into screenshot writes.",
+    "noiseTier": "normal",
+    "filePatterns": [
+      "src/file-handler.ts",
+      "src/parse-output-path-and-format.ts"
+    ],
+    "patterns": [
+      {
+        "source": "await copyFile\\(|await rm\\(this\\._fileDirectory|path\\.extname\\(output\\)|mime\\.extension\\(format\\)",
+        "flags": "m",
+        "label": "Local file staging and output-path derivation"
+      }
+    ],
+    "examples": [
+      "await copyFile(",
+      "await rm(this._fileDirectory, {recursive: true});",
+      "const extension = path.extname(output);"
+    ],
+    "closesSurfaceIds": ["screenshot-glb-local-file-flow"]
+  },
+  {
+    "version": 1,
+    "slug": "screenshot-glb-url-probe",
+    "description": "Select the HTTP/HTTPS model-viewer existence check missed by shared matchers. Trace actual URL sources, transport choice, response handling, and timeout/connection limits without assuming an arbitrary attacker-chosen destination.",
+    "noiseTier": "normal",
+    "filePatterns": ["src/check-file-exists-at-url.ts"],
+    "patterns": [
+      {
+        "source": "https?\\.get\\(url\\)|request\\.on\\('response'",
+        "flags": "m",
+        "label": "Model-viewer URL probe and network lifecycle"
+      }
+    ],
+    "examples": ["request = https.get(url);", "request = http.get(url);"],
+    "closesSurfaceIds": ["screenshot-glb-url-probe"]
+  }
+]
